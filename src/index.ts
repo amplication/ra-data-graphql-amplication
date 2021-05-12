@@ -1,6 +1,5 @@
 import merge from "lodash/merge";
 import buildDataProvider from "ra-data-graphql";
-import { DELETE, DELETE_MANY, UPDATE, UPDATE_MANY } from "ra-core";
 import pluralize from "pluralize";
 
 import defaultBuildQuery from "./buildQuery";
@@ -10,23 +9,24 @@ import {
   GET_ONE,
   GET_MANY,
   GET_MANY_REFERENCE,
-  // CREATE,
-  // UPDATE,
-  // UPDATE_MANY,
-  // DELETE,
-  // DELETE_MANY
+  DELETE_MANY,
+  UPDATE_MANY,
 } from "ra-core";
+
+import { IntrospectionObjectType, FetchType } from "./types";
 
 const defaultOptions = {
   buildQuery: defaultBuildQuery,
   introspection: {
     operationNames: {
-      [GET_ONE]: (resource) => `${(resource.name as string).toLowerCase()}`,
-      [GET_LIST]: (resource) =>
+      [GET_ONE]: (resource: IntrospectionObjectType) =>
+        `${(resource.name as string).toLowerCase()}`,
+      [GET_LIST]: (resource: IntrospectionObjectType) => {
+        return `${pluralize((resource.name as string).toLowerCase())}`;
+      },
+      [GET_MANY]: (resource: IntrospectionObjectType) =>
         `${pluralize((resource.name as string).toLowerCase())}`,
-      [GET_MANY]: (resource) =>
-        `${pluralize((resource.name as string).toLowerCase())}`,
-      [GET_MANY_REFERENCE]: (resource) =>
+      [GET_MANY_REFERENCE]: (resource: IntrospectionObjectType) =>
         `${pluralize((resource.name as string).toLowerCase())}`,
     },
   },
@@ -34,52 +34,19 @@ const defaultOptions = {
 
 export const buildQuery = defaultBuildQuery;
 
-export default (options) => {
+export default (options: any) => {
   return buildDataProvider(merge({}, defaultOptions, options)).then(
-    (defaultDataProvider) => {
-      return (fetchType, resource, params) => {
-        // This provider does not support multiple deletions so instead we send multiple DELETE requests
-        // This can be optimized using the apollo-link-batch-http link
+    (defaultDataProvider: any) => {
+      return (
+        fetchType: FetchType,
+        resource: IntrospectionObjectType,
+        params: any
+      ) => {
         if (fetchType === DELETE_MANY) {
-          const { ids, ...otherParams } = params;
-          return Promise.all(
-            ids.map((id) =>
-              defaultDataProvider(DELETE, resource, {
-                id,
-                ...otherParams,
-              })
-            )
-          ).then((results) => {
-            const data = results.reduce(
-              (acc, { data }) => [...acc, data.id],
-              []
-            );
-
-            return { data };
-          });
+          throw new Error(`DELETE_MANY is not supported by this data provider`);
         }
-        // This provider does not support multiple deletions so instead we send multiple UPDATE requests
-        // This can be optimized using the apollo-link-batch-http link
         if (fetchType === UPDATE_MANY) {
-          const { ids, data, ...otherParams } = params;
-          return Promise.all(
-            ids.map((id) =>
-              defaultDataProvider(UPDATE, resource, {
-                data: {
-                  id,
-                  ...data,
-                },
-                ...otherParams,
-              })
-            )
-          ).then((results) => {
-            const data = results.reduce(
-              (acc, { data }) => [...acc, data.id],
-              []
-            );
-
-            return { data };
-          });
+          throw new Error(`UPDATE_MANY is not supported by this data provider`);
         }
 
         return defaultDataProvider(fetchType, resource, params);

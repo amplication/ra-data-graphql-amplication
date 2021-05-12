@@ -1,6 +1,7 @@
 import { GET_LIST, GET_MANY, GET_MANY_REFERENCE } from "ra-core";
+import { FetchType, IntrospectionResults } from "types";
 
-const sanitizeResource = (data) => {
+const sanitizeResource = (data: any): any => {
   const result = Object.keys(data).reduce((acc, key) => {
     if (key.startsWith("_")) {
       return acc;
@@ -41,23 +42,24 @@ const sanitizeResource = (data) => {
   return result;
 };
 
-const getResponseParser = (introspectionResults) => (aorFetchType) => (
-  response
-) => {
-  const data = response.data;
+const getResponseParser =
+  (introspectionResults: IntrospectionResults) =>
+  (aorFetchType: FetchType) =>
+  (response: any) => {
+    const data = response.data;
 
-  if (
-    aorFetchType === GET_LIST ||
-    aorFetchType === GET_MANY ||
-    aorFetchType === GET_MANY_REFERENCE
-  ) {
-    return {
-      data: response.data.items.map(sanitizeResource),
-      total: response.data.total.count,
-    };
-  }
+    if (
+      aorFetchType === GET_LIST ||
+      aorFetchType === GET_MANY ||
+      aorFetchType === GET_MANY_REFERENCE
+    ) {
+      return {
+        data: response?.data?.items?.map(sanitizeResource),
+        total: response?.data?.total?.count,
+      };
+    }
 
-  return { data: sanitizeResource(data.data) };
-};
+    return { data: sanitizeResource(data.data) };
+  };
 
 export default getResponseParser;
