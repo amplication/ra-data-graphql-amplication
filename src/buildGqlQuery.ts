@@ -26,65 +26,65 @@ export const buildFragments = (introspectionResults) => (possibleTypes) =>
     ];
   }, []);
 
-export const buildFields =
-  (introspectionResults, path = []) =>
-  (fields) =>
-    fields.reduce((acc, field) => {
-      const type = getFinalType(field.type);
+export const buildFields = (introspectionResults, path: String[] = []) => (
+  fields
+) =>
+  fields.reduce((acc, field) => {
+    const type = getFinalType(field.type);
 
-      if (type.name.startsWith("_")) {
-        return acc;
-      }
-
-      if (type.kind !== TypeKind.OBJECT && type.kind !== TypeKind.INTERFACE) {
-        return [...acc, gqlTypes.field(gqlTypes.name(field.name))];
-      }
-
-      const linkedResource = introspectionResults.resources.find(
-        (r) => r.type.name === type.name
-      );
-
-      if (linkedResource) {
-        return [
-          ...acc,
-          gqlTypes.field(
-            gqlTypes.name(field.name),
-            null,
-            null,
-            null,
-            gqlTypes.selectionSet([gqlTypes.field(gqlTypes.name("id"))])
-          ),
-        ];
-      }
-
-      const linkedType = introspectionResults.types.find(
-        (t) => t.name === type.name
-      );
-
-      if (linkedType && !path.includes(linkedType.name)) {
-        return [
-          ...acc,
-          gqlTypes.field(
-            gqlTypes.name(field.name),
-            null,
-            null,
-            null,
-            gqlTypes.selectionSet([
-              ...buildFragments(introspectionResults)(
-                linkedType.possibleTypes || []
-              ),
-              ...buildFields(introspectionResults, [...path, linkedType.name])(
-                linkedType.fields
-              ),
-            ])
-          ),
-        ];
-      }
-
-      // NOTE: We might have to handle linked types which are not resources but will have to be careful about
-      // ending with endless circular dependencies
+    if (type.name.startsWith("_")) {
       return acc;
-    }, []);
+    }
+
+    if (type.kind !== TypeKind.OBJECT && type.kind !== TypeKind.INTERFACE) {
+      return [...acc, gqlTypes.field(gqlTypes.name(field.name))];
+    }
+
+    const linkedResource = introspectionResults.resources.find(
+      (r) => r.type.name === type.name
+    );
+
+    if (linkedResource) {
+      return [
+        ...acc,
+        gqlTypes.field(
+          gqlTypes.name(field.name),
+          null,
+          null,
+          null,
+          gqlTypes.selectionSet([gqlTypes.field(gqlTypes.name("id"))])
+        ),
+      ];
+    }
+
+    const linkedType = introspectionResults.types.find(
+      (t) => t.name === type.name
+    );
+
+    if (linkedType && !path.includes(linkedType.name)) {
+      return [
+        ...acc,
+        gqlTypes.field(
+          gqlTypes.name(field.name),
+          null,
+          null,
+          null,
+          gqlTypes.selectionSet([
+            ...buildFragments(introspectionResults)(
+              linkedType.possibleTypes || []
+            ),
+            ...buildFields(introspectionResults, [...path, linkedType.name])(
+              linkedType.fields
+            ),
+          ])
+        ),
+      ];
+    }
+
+    // NOTE: We might have to handle linked types which are not resources but will have to be careful about
+    // ending with endless circular dependencies
+    return acc;
+  }, []);
 
 export const getArgType = (arg) => {
   const type = getFinalType(arg.type);
@@ -155,65 +155,52 @@ export const buildApolloArgs = (query, variables) => {
   return args;
 };
 
-export default (introspectionResults) =>
-  (resource, aorFetchType, queryType, variables) => {
-    const { sortField, sortOrder, ...metaVariables } = variables;
-    const apolloArgs = buildApolloArgs(queryType, variables);
-    const args = buildArgs(queryType, variables);
-    const metaArgs = buildArgs(queryType, metaVariables);
-    const fields = buildFields(introspectionResults)(resource.type.fields);
-    if (
-      aorFetchType === GET_LIST ||
-      aorFetchType === GET_MANY ||
-      aorFetchType === GET_MANY_REFERENCE
-    ) {
-      return gqlTypes.document([
-        gqlTypes.operationDefinition(
-          "query",
-          gqlTypes.selectionSet([
-            gqlTypes.field(
-              gqlTypes.name(queryType.name),
-              gqlTypes.name("items"),
-              args,
-              null,
-              gqlTypes.selectionSet(fields)
-            ),
-            gqlTypes.field(
-              gqlTypes.name(`_${queryType.name}Meta`),
-              gqlTypes.name("total"),
-              metaArgs,
-              null,
-              gqlTypes.selectionSet([gqlTypes.field(gqlTypes.name("count"))])
-            ),
-          ]),
-          gqlTypes.name(queryType.name),
-          apolloArgs
-        ),
-      ]);
-    }
-
-    if (aorFetchType === DELETE) {
-      return gqlTypes.document([
-        gqlTypes.operationDefinition(
-          "mutation",
-          gqlTypes.selectionSet([
-            gqlTypes.field(
-              gqlTypes.name(queryType.name),
-              gqlTypes.name("data"),
-              args,
-              null,
-              gqlTypes.selectionSet(fields)
-            ),
-          ]),
-          gqlTypes.name(queryType.name),
-          apolloArgs
-        ),
-      ]);
-    }
-
+const buildGqlQuery = (introspectionResults) => (
+  resource,
+  aorFetchType,
+  queryType,
+  variables
+) => {
+  const { sortField, sortOrder, ...metaVariables } = variables;
+  const apolloArgs = buildApolloArgs(queryType, variables);
+  const args = buildArgs(queryType, variables);
+  const metaArgs = buildArgs(queryType, metaVariables);
+  const fields = buildFields(introspectionResults)(resource.type.fields);
+  if (
+    aorFetchType === GET_LIST ||
+    aorFetchType === GET_MANY ||
+    aorFetchType === GET_MANY_REFERENCE
+  ) {
     return gqlTypes.document([
       gqlTypes.operationDefinition(
-        QUERY_TYPES.includes(aorFetchType) ? "query" : "mutation",
+        "query",
+        gqlTypes.selectionSet([
+          gqlTypes.field(
+            gqlTypes.name(queryType.name),
+            gqlTypes.name("items"),
+            args,
+            null,
+            gqlTypes.selectionSet(fields)
+          ),
+
+          gqlTypes.field(
+            gqlTypes.name(`_${queryType.name}Meta`),
+            gqlTypes.name("total"),
+            metaArgs,
+            null,
+            gqlTypes.selectionSet([gqlTypes.field(gqlTypes.name("count"))])
+          ),
+        ]),
+        gqlTypes.name(queryType.name),
+        apolloArgs
+      ),
+    ]);
+  }
+
+  if (aorFetchType === DELETE) {
+    return gqlTypes.document([
+      gqlTypes.operationDefinition(
+        "mutation",
         gqlTypes.selectionSet([
           gqlTypes.field(
             gqlTypes.name(queryType.name),
@@ -227,4 +214,24 @@ export default (introspectionResults) =>
         apolloArgs
       ),
     ]);
-  };
+  }
+
+  return gqlTypes.document([
+    gqlTypes.operationDefinition(
+      QUERY_TYPES.includes(aorFetchType) ? "query" : "mutation",
+      gqlTypes.selectionSet([
+        gqlTypes.field(
+          gqlTypes.name(queryType.name),
+          gqlTypes.name("data"),
+          args,
+          null,
+          gqlTypes.selectionSet(fields)
+        ),
+      ]),
+      gqlTypes.name(queryType.name),
+      apolloArgs
+    ),
+  ]);
+};
+
+export default buildGqlQuery;

@@ -41,7 +41,9 @@ const sanitizeResource = (data) => {
   return result;
 };
 
-export default (introspectionResults) => (aorFetchType) => (response) => {
+const getResponseParser = (introspectionResults) => (aorFetchType) => (
+  response
+) => {
   const data = response.data;
 
   if (
@@ -57,3 +59,5 @@ export default (introspectionResults) => (aorFetchType) => (response) => {
 
   return { data: sanitizeResource(data.data) };
 };
+
+export default getResponseParser;
