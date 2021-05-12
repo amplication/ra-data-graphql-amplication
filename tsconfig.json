@@ -1,9 +1,25 @@
 {
-    "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "outDir": "lib",
-        "rootDir": "src"
+      "module": "commonjs",
+      "declaration": true,
+      "removeComments": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "target": "es2017",
+      "lib": ["es2020"],
+      "sourceMap": true,
+      "baseUrl": "./src",
+      "outDir": "dist",
+      "incremental": true,
+      "skipLibCheck": true,
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "resolveJsonModule": true,
+      "strict": true,
+      "jsx": "react",
+      "noImplicitAny": false
     },
-    "exclude": ["**/*.spec.ts", "**/*.spec.tsx", "**/*.spec.js"],
-    "include": ["src"]
-}
+    "include": ["src"],
+    "exclude": ["node_modules"]
+  }
+  

@@ -1,10 +1,35 @@
 import merge from "lodash/merge";
 import buildDataProvider from "ra-data-graphql";
 import { DELETE, DELETE_MANY, UPDATE, UPDATE_MANY } from "ra-core";
+import pluralize from "pluralize";
 
 import defaultBuildQuery from "./buildQuery";
+
+import {
+  GET_LIST,
+  GET_ONE,
+  GET_MANY,
+  GET_MANY_REFERENCE,
+  // CREATE,
+  // UPDATE,
+  // UPDATE_MANY,
+  // DELETE,
+  // DELETE_MANY
+} from "ra-core";
+
 const defaultOptions = {
   buildQuery: defaultBuildQuery,
+  introspection: {
+    operationNames: {
+      [GET_ONE]: (resource) => `${(resource.name as string).toLowerCase()}`,
+      [GET_LIST]: (resource) =>
+        `${pluralize((resource.name as string).toLowerCase())}`,
+      [GET_MANY]: (resource) =>
+        `${pluralize((resource.name as string).toLowerCase())}`,
+      [GET_MANY_REFERENCE]: (resource) =>
+        `${pluralize((resource.name as string).toLowerCase())}`,
+    },
+  },
 };
 
 export const buildQuery = defaultBuildQuery;
