@@ -1,11 +1,16 @@
 {
   "name": "ra-data-graphql-amplication",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A GraphQL simple data provider for react-admin",
   "main": "dist/index.js",
   "authors": [
     "Yuval Hazaz"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amplication/amplication.git"
+  },
+  "homepage": "https://amplication.com",
   "keywords": [
     "react-admin",
     "amplication",
