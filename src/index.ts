@@ -1,6 +1,7 @@
 import merge from "lodash/merge";
 import buildDataProvider from "ra-data-graphql";
 import pluralize from "pluralize";
+import { camelCase } from "camel-case";
 
 import defaultBuildQuery from "./buildQuery";
 
@@ -20,14 +21,14 @@ const defaultOptions = {
   introspection: {
     operationNames: {
       [GET_ONE]: (resource: IntrospectionObjectType) =>
-        `${(resource.name as string).toLowerCase()}`,
+        `${camelCase(resource.name as string)}`,
       [GET_LIST]: (resource: IntrospectionObjectType) => {
-        return `${pluralize((resource.name as string).toLowerCase())}`;
+        return `${pluralize(camelCase(resource.name as string))}`;
       },
       [GET_MANY]: (resource: IntrospectionObjectType) =>
-        `${pluralize((resource.name as string).toLowerCase())}`,
+        `${pluralize(camelCase(resource.name as string))}`,
       [GET_MANY_REFERENCE]: (resource: IntrospectionObjectType) =>
-        `${pluralize((resource.name as string).toLowerCase())}`,
+        `${pluralize(camelCase(resource.name as string))}`,
     },
   },
 };
