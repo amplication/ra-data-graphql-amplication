@@ -21,6 +21,7 @@ import {
   QueryType,
 } from "./types";
 import { IntrospectionInputType } from "graphql";
+import { camelCase } from "lodash";
 
 const NON_UPDATABLE_FIELDS = ["id", "createdAt", "updatedAt"];
 
@@ -81,7 +82,7 @@ const prepareParams = (
     if (key === "target") {
       const target: string = param;
       if (target.endsWith("Id")) {
-        result[key] = target.slice(0, -2).toLowerCase();
+        result[key] = camelCase(target.slice(0, -2));
         return;
       }
     }
