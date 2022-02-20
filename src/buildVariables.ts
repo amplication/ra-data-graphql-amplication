@@ -295,6 +295,13 @@ const buildCreateUpdateVariables = (
             ...acc,
             [`${key}Ids`]: params.data[key].map(({ id }: any) => id),
           };
+        } else {
+          return {
+            ...acc,
+            [key]: {
+              connect: params.data[key],
+            }
+          }
         }
       }
 
