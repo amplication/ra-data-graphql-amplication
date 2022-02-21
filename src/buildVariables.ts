@@ -295,7 +295,18 @@ const buildCreateUpdateVariables = (
             ...acc,
             [`${key}Ids`]: params.data[key].map(({ id }: any) => id),
           };
-        } else {
+        }
+
+        if (aorFetchType === 'UPDATE') {
+          return {
+            ...acc,
+            [key]: {
+               set: params.data[key],
+            }
+          }
+        }
+
+        if (aorFetchType === 'CREATE') {
           return {
             ...acc,
             [key]: {
