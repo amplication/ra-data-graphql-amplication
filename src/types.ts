@@ -2,6 +2,7 @@ import {
   IntrospectionSchema,
   IntrospectionField,
   IntrospectionObjectType,
+  IntrospectionType,
 } from 'graphql';
 
 export {
