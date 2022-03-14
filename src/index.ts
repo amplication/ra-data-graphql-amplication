@@ -1,4 +1,5 @@
 import { camelCase } from 'camel-case';
+import { IntrospectionType } from 'graphql';
 import merge from 'lodash/merge';
 import pluralize from 'pluralize';
 import {
@@ -8,31 +9,40 @@ import {
   GET_MANY_REFERENCE,
   GET_ONE,
 } from 'ra-core';
-import buildDataProvider, { BuildQueryFactory, Options } from 'ra-data-graphql';
+import buildDataProvider, {
+  BuildQueryFactory,
+  IntrospectionOptions,
+  Options,
+} from 'ra-data-graphql';
 import defaultBuildQuery from './buildQuery';
-import { IntrospectionObjectType } from './types';
 
-const defaultOptions = {
-  buildQuery: defaultBuildQuery,
-  introspection: {
-    operationNames: {
-      [GET_ONE]: (resource: IntrospectionObjectType) =>
-        `${camelCase(resource.name as string)}`,
-      [GET_LIST]: (resource: IntrospectionObjectType) => {
-        return `${pluralize(camelCase(resource.name as string))}`;
-      },
-      [GET_MANY]: (resource: IntrospectionObjectType) =>
-        `${pluralize(camelCase(resource.name as string))}`,
-      [GET_MANY_REFERENCE]: (resource: IntrospectionObjectType) =>
-        `${pluralize(camelCase(resource.name as string))}`,
+/**
+ * You can see more details about the introspection object in the link
+ * https://github.com/marmelab/react-admin/tree/master/packages/ra-data-graphql#introspection-options
+ */
+const introspection: IntrospectionOptions = {
+  operationNames: {
+    [GET_ONE]: (resource: IntrospectionType) =>
+      `${camelCase(resource.name as string)}`,
+    [GET_LIST]: (resource: IntrospectionType) => {
+      return `${pluralize(camelCase(resource.name as string))}`;
     },
+    [GET_MANY]: (resource: IntrospectionType) =>
+      `${pluralize(camelCase(resource.name as string))}`,
+    [GET_MANY_REFERENCE]: (resource: IntrospectionType) =>
+      `${pluralize(camelCase(resource.name as string))}`,
   },
+};
+
+const defaultAmplicationOptions = {
+  buildQuery: defaultBuildQuery,
+  introspection,
 };
 
 export default (
   options: Omit<Options, 'buildQuery'> & { buildQuery?: BuildQueryFactory }
 ): Promise<DataProvider> => {
-  return buildDataProvider(merge({}, defaultOptions, options)).then(
+  return buildDataProvider(merge({}, defaultAmplicationOptions, options)).then(
     (defaultDataProvider) => {
       return {
         ...defaultDataProvider,
