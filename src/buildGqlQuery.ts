@@ -1,7 +1,7 @@
 import { ArgumentNode, VariableDefinitionNode, TypeKind } from 'graphql';
 import * as gqlTypes from 'graphql-ast-types-browser';
 import { DELETE, GET_LIST, GET_MANY, GET_MANY_REFERENCE } from 'ra-core';
-import { QUERY_TYPES } from 'ra-data-graphql';
+import { IntrospectedResource, QUERY_TYPES } from 'ra-data-graphql';
 import getFinalType from './getFinalType';
 import isList from './isList';
 import isRequired from './isRequired';
@@ -178,8 +178,8 @@ export const buildApolloArgs = (
 const buildGqlQuery =
   (introspectionResults: IntrospectionResults) =>
   (
-    resource: Resource,
-    aorFetchType: FetchType,
+    resource: IntrospectedResource,
+    raFetchMethod: FetchType,
     queryType: IntrospectionField,
     variables: Variables
   ) => {
@@ -188,10 +188,11 @@ const buildGqlQuery =
     const args = buildArgs(queryType, variables);
     const metaArgs = buildArgs(queryType, metaVariables);
     const fields = buildFields(introspectionResults)(resource.type.fields);
+
     if (
-      aorFetchType === GET_LIST ||
-      aorFetchType === GET_MANY ||
-      aorFetchType === GET_MANY_REFERENCE
+      raFetchMethod === GET_LIST ||
+      raFetchMethod === GET_MANY ||
+      raFetchMethod === GET_MANY_REFERENCE
     ) {
       return gqlTypes.document([
         gqlTypes.operationDefinition(
@@ -219,7 +220,7 @@ const buildGqlQuery =
       ]);
     }
 
-    if (aorFetchType === DELETE) {
+    if (raFetchMethod === DELETE) {
       return gqlTypes.document([
         gqlTypes.operationDefinition(
           'mutation',
@@ -240,7 +241,7 @@ const buildGqlQuery =
 
     return gqlTypes.document([
       gqlTypes.operationDefinition(
-        QUERY_TYPES.includes(aorFetchType) ? 'query' : 'mutation',
+        QUERY_TYPES.includes(raFetchMethod) ? 'query' : 'mutation',
         gqlTypes.selectionSet([
           gqlTypes.field(
             gqlTypes.name(queryType.name),
