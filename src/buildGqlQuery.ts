@@ -2,6 +2,7 @@ import {
   ArgumentNode,
   IntrospectionNamedTypeRef,
   TypeKind,
+  TypeNode,
   VariableDefinitionNode,
 } from 'graphql';
 import * as gqlTypes from 'graphql-ast-types-browser';
@@ -177,7 +178,7 @@ export const buildFragments =
         gqlTypes.inlineFragment(
           gqlTypes.selectionSet(
             buildFields(introspectionResults)(
-              (linkedType as IntrospectionObjectType)?.fields
+              (linkedType as IntrospectionObjectType).fields
             )
           ),
           gqlTypes.namedType(gqlTypes.name(type.name))
@@ -240,7 +241,7 @@ export const buildApolloArgs = (
   return args;
 };
 
-export const getArgType = (arg: IntrospectionInputValue) => {
+export const getArgType = (arg: IntrospectionInputValue): TypeNode => {
   const type = getFinalType(arg.type);
   const required = isRequired(arg.type);
   const list = isList(arg.type);
