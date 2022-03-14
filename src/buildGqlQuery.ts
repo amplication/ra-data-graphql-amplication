@@ -40,7 +40,7 @@ export const buildFragments =
     }, [] as any[]);
 
 export const buildFields =
-  (introspectionResults: IntrospectionResults, path: String[] = []) =>
+  (introspectionResults: IntrospectionResults, paths: String[] = []) =>
   (fields: Readonly<IntrospectionField[]>): any =>
     fields.reduce((acc, field) => {
       const type = getFinalType(field.type);
@@ -74,7 +74,9 @@ export const buildFields =
         (t) => t.name === type.name
       );
 
-      if (linkedType && !path.includes(linkedType.name)) {
+      if (linkedType && !paths.includes(linkedType.name)) {
+        const possibleTypes =
+          (linkedType as IntrospectionUnionType).possibleTypes || [];
         return [
           ...acc,
           gqlTypes.field(
@@ -83,10 +85,8 @@ export const buildFields =
             null,
             null,
             gqlTypes.selectionSet([
-              ...buildFragments(introspectionResults)(
-                (linkedType as IntrospectionUnionType).possibleTypes || []
-              ),
-              ...buildFields(introspectionResults, [...path, linkedType.name])(
+              ...buildFragments(introspectionResults)(possibleTypes),
+              ...buildFields(introspectionResults, [...paths, linkedType.name])(
                 (linkedType as IntrospectionObjectType).fields
               ),
             ])
@@ -97,7 +97,7 @@ export const buildFields =
       // NOTE: We might have to handle linked types which are not resources but will have to be careful about
       // ending with endless circular dependencies
       return acc;
-    }, [] as any[]);
+    }, [] as IntrospectionField[]);
 
 export const getArgType = (arg: IntrospectionInputValue) => {
   const type = getFinalType(arg.type);

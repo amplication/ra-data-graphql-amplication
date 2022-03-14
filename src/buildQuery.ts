@@ -1,8 +1,8 @@
-import { BuildQuery, IntrospectionResult } from 'ra-data-graphql';
+import { BuildQuery } from 'ra-data-graphql';
 import buildGqlQuery from './buildGqlQuery';
 import buildVariables from './buildVariables';
 import getResponseParser from './getResponseParser';
-import { FetchType } from './types';
+import { FetchType, IntrospectionResults } from './types';
 
 export const buildQueryFactory =
   (
@@ -10,7 +10,7 @@ export const buildQueryFactory =
     buildGqlQueryImpl = buildGqlQuery,
     getResponseParserImpl = getResponseParser
   ) =>
-  (introspectionResults: IntrospectionResult): BuildQuery => {
+  (introspectionResults: IntrospectionResults): BuildQuery => {
     const knownResources = introspectionResults.resources.map(
       (r) => r.type.name
     );
