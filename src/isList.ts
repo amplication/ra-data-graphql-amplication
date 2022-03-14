@@ -1,4 +1,4 @@
-import { TypeKind } from "graphql";
+import { TypeKind } from 'graphql';
 
 const isList = (type: any): boolean => {
   if (type.kind === TypeKind.NON_NULL) {

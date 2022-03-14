@@ -1,9 +1,9 @@
-import merge from "lodash/merge";
-import buildDataProvider from "ra-data-graphql";
-import pluralize from "pluralize";
-import { camelCase } from "camel-case";
+import merge from 'lodash/merge';
+import buildDataProvider from 'ra-data-graphql';
+import pluralize from 'pluralize';
+import { camelCase } from 'camel-case';
 
-import defaultBuildQuery from "./buildQuery";
+import defaultBuildQuery from './buildQuery';
 
 import {
   GET_LIST,
@@ -12,9 +12,9 @@ import {
   GET_MANY_REFERENCE,
   DELETE_MANY,
   UPDATE_MANY,
-} from "ra-core";
+} from 'ra-core';
 
-import { IntrospectionObjectType, FetchType } from "./types";
+import { IntrospectionObjectType, FetchType } from './types';
 
 const defaultOptions = {
   buildQuery: defaultBuildQuery,

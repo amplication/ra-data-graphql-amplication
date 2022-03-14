@@ -1,9 +1,9 @@
-import { GET_LIST, GET_MANY, GET_MANY_REFERENCE } from "ra-core";
-import { FetchType, IntrospectionResults } from "types";
+import { GET_LIST, GET_MANY, GET_MANY_REFERENCE } from 'ra-core';
+import { FetchType, IntrospectionResults } from 'types';
 
 const sanitizeResource = (data: any): any => {
   const result = Object.keys(data).reduce((acc, key) => {
-    if (key.startsWith("_")) {
+    if (key.startsWith('_')) {
       return acc;
     }
 
@@ -14,7 +14,7 @@ const sanitizeResource = (data: any): any => {
     }
 
     if (Array.isArray(dataKey)) {
-      if (typeof dataKey[0] === "object" && dataKey[0] !== null) {
+      if (typeof dataKey[0] === 'object' && dataKey[0] !== null) {
         return {
           ...acc,
           [key]: dataKey.map(sanitizeResource),
@@ -25,7 +25,7 @@ const sanitizeResource = (data: any): any => {
       }
     }
 
-    if (typeof dataKey === "object" && dataKey !== null) {
+    if (typeof dataKey === 'object' && dataKey !== null) {
       return {
         ...acc,
         ...(dataKey &&

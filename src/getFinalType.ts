@@ -1,5 +1,5 @@
-import { TypeKind } from "graphql";
-import { GraphQLType } from "./types";
+import { TypeKind } from 'graphql';
+import { GraphQLType } from './types';
 /**
  * Ensure we get the real type even if the root type is NON_NULL or LIST
  * @param {GraphQLType} type

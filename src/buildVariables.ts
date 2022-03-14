@@ -7,10 +7,10 @@ import {
   CREATE,
   UPDATE,
   DELETE,
-} from "ra-core";
+} from 'ra-core';
 
-import getFinalType from "./getFinalType";
-import isList from "./isList";
+import getFinalType from './getFinalType';
+import isList from './isList';
 import {
   IntrospectionResults,
   IntrospectionType,
@@ -19,18 +19,18 @@ import {
   Resource,
   FetchType,
   QueryType,
-} from "./types";
-import { IntrospectionInputType } from "graphql";
-import { camelCase } from "lodash";
+} from './types';
+import { IntrospectionInputType } from 'graphql';
+import { camelCase } from 'lodash';
 
-const NON_UPDATABLE_FIELDS = ["id", "createdAt", "updatedAt"];
+const NON_UPDATABLE_FIELDS = ['id', 'createdAt', 'updatedAt'];
 
 const sanitizeValue = (type: IntrospectionType, value: any) => {
-  if (type.name === "Int") {
+  if (type.name === 'Int') {
     return parseInt(value, 10);
   }
 
-  if (type.name === "Float") {
+  if (type.name === 'Float') {
     return parseFloat(value);
   }
 
@@ -38,15 +38,15 @@ const sanitizeValue = (type: IntrospectionType, value: any) => {
 };
 
 const castType = (type: any, value: any) => {
-  const realType = type.kind === "NON_NULL" ? type.ofType : type;
+  const realType = type.kind === 'NON_NULL' ? type.ofType : type;
   switch (`${realType.kind}:${realType.name}`) {
-    case "SCALAR:Int":
+    case 'SCALAR:Int':
       return Number(value);
 
-    case "SCALAR:String":
+    case 'SCALAR:String':
       return String(value);
 
-    case "SCALAR:Boolean":
+    case 'SCALAR:Boolean':
       return Boolean(value);
 
     default:
@@ -75,13 +75,13 @@ const prepareParams = (
     }
 
     //skip params like "customer.id"
-    if (key.endsWith(".id")) {
+    if (key.endsWith('.id')) {
       return;
     }
 
-    if (key === "target") {
+    if (key === 'target') {
       const target: string = param;
-      if (target.endsWith("Id")) {
+      if (target.endsWith('Id')) {
         result[key] = camelCase(target.slice(0, -2));
         return;
       }
@@ -105,7 +105,7 @@ const prepareParams = (
       param instanceof Object &&
       !Array.isArray(param) &&
       arg &&
-      arg.type.kind === "INPUT_OBJECT"
+      arg.type.kind === 'INPUT_OBJECT'
     ) {
       const args = (
         introspectionResults.types.find(
@@ -144,11 +144,11 @@ const buildGetListVariables =
 
     if (params.filter) {
       variables.where = Object.keys(params.filter).reduce((acc, key) => {
-        if (key === "ids") {
+        if (key === 'ids') {
           return { ...acc, ids: params.filter[key] };
         }
 
-        if (typeof params.filter[key] === "object") {
+        if (typeof params.filter[key] === 'object') {
           const type = introspectionResults.types.find(
             (t) => t.name === `${resource.type.name}Filter`
           );
@@ -168,10 +168,10 @@ const buildGetListVariables =
           }
         }
 
-        const parts = key.split(".");
+        const parts = key.split('.');
 
         if (parts.length > 1) {
-          if (parts[1] === "id") {
+          if (parts[1] === 'id') {
             const type = introspectionResults.types.find(
               (t) => t.name === `${resource.type.name}Filter`
             );
@@ -233,12 +233,12 @@ const buildGetListVariables =
     }
 
     if (params.sort) {
-      const sortField = params.sort.field.endsWith(".id")
+      const sortField = params.sort.field.endsWith('.id')
         ? `${params.sort.field.slice(0, -3)}Id`
         : params.sort.field;
 
       variables.orderBy = {
-        [sortField]: params.sort.order === "DESC" ? "Desc" : "Asc",
+        [sortField]: params.sort.order === 'DESC' ? 'Desc' : 'Asc',
       };
     }
 
@@ -248,7 +248,7 @@ const buildGetListVariables =
 const getCreateUpdateInputType = (
   queryType: QueryType
 ): IntrospectionInputType => {
-  const inputType = queryType.args.find((arg) => arg.name === "data");
+  const inputType = queryType.args.find((arg) => arg.name === 'data');
   return getFinalType(inputType?.type);
 };
 
@@ -257,7 +257,7 @@ const getInputTypeFieldsNames = (
   typeName: String
 ): string[] => {
   const type = introspectionResults.types.find(
-    (type) => type.name === typeName && type.kind === "INPUT_OBJECT"
+    (type) => type.name === typeName && type.kind === 'INPUT_OBJECT'
   );
 
   return (type as IntrospectionInputObjectType).inputFields.map(
@@ -301,9 +301,9 @@ const buildCreateUpdateVariables = (
           return {
             ...acc,
             [key]: {
-               set: params.data[key],
-            }
-          }
+              set: params.data[key],
+            },
+          };
         }
 
         if (aorFetchType === 'CREATE') {
@@ -311,12 +311,12 @@ const buildCreateUpdateVariables = (
             ...acc,
             [key]: {
               connect: params.data[key],
-            }
-          }
+            },
+          };
         }
       }
 
-      if (typeof params.data[key] === "object") {
+      if (typeof params.data[key] === 'object') {
         const arg = queryType.args.find((a) => a.name === `${key}Id`);
 
         if (arg) {

@@ -1,8 +1,8 @@
-import buildVariables from "./buildVariables";
-import buildGqlQuery from "./buildGqlQuery";
-import getResponseParser from "./getResponseParser";
+import buildVariables from './buildVariables';
+import buildGqlQuery from './buildGqlQuery';
+import getResponseParser from './getResponseParser';
 
-import { FetchType, IntrospectionResults } from "./types";
+import { FetchType, IntrospectionResults } from './types';
 
 export const buildQueryFactory =
   (
@@ -23,7 +23,7 @@ export const buildQueryFactory =
       if (!resource) {
         throw new Error(
           `Unknown resource ${resourceName}. Make sure it has been declared on your server side schema. Known resources are ${knownResources.join(
-            ", "
+            ', '
           )}`
         );
       }

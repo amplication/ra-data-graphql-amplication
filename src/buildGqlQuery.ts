@@ -1,11 +1,11 @@
-import { GET_LIST, GET_MANY, GET_MANY_REFERENCE, DELETE } from "ra-core";
-import { QUERY_TYPES } from "ra-data-graphql";
-import { TypeKind } from "graphql";
-import * as gqlTypes from "graphql-ast-types-browser";
+import { GET_LIST, GET_MANY, GET_MANY_REFERENCE, DELETE } from 'ra-core';
+import { QUERY_TYPES } from 'ra-data-graphql';
+import { TypeKind } from 'graphql';
+import * as gqlTypes from 'graphql-ast-types-browser';
 
-import getFinalType from "./getFinalType";
-import isList from "./isList";
-import isRequired from "./isRequired";
+import getFinalType from './getFinalType';
+import isList from './isList';
+import isRequired from './isRequired';
 import {
   FetchType,
   IntrospectionResults,
@@ -16,7 +16,7 @@ import {
   IntrospectionUnionType,
   IntrospectionObjectType,
   IntrospectionField,
-} from "./types";
+} from './types';
 
 export const buildFragments =
   (introspectionResults: IntrospectionResults) =>
@@ -47,7 +47,7 @@ export const buildFields =
     fields.reduce((acc, field) => {
       const type = getFinalType(field.type);
 
-      if (type.name.startsWith("_")) {
+      if (type.name.startsWith('_')) {
         return acc;
       }
 
@@ -67,7 +67,7 @@ export const buildFields =
             null,
             null,
             null,
-            gqlTypes.selectionSet([gqlTypes.field(gqlTypes.name("id"))])
+            gqlTypes.selectionSet([gqlTypes.field(gqlTypes.name('id'))])
           ),
         ];
       }
@@ -128,7 +128,7 @@ export const buildArgs = (query: QueryType, variables: Variables) => {
   }
 
   const validVariables = Object.keys(variables).filter(
-    (k) => typeof variables[k] !== "undefined"
+    (k) => typeof variables[k] !== 'undefined'
   );
   let args = query.args
     .filter((a) => validVariables.includes(a.name))
@@ -152,7 +152,7 @@ export const buildApolloArgs = (query: QueryType, variables: Variables) => {
   }
 
   const validVariables = Object.keys(variables).filter(
-    (k) => typeof variables[k] !== "undefined"
+    (k) => typeof variables[k] !== 'undefined'
   );
 
   let args = query.args
@@ -191,11 +191,11 @@ const buildGqlQuery =
     ) {
       return gqlTypes.document([
         gqlTypes.operationDefinition(
-          "query",
+          'query',
           gqlTypes.selectionSet([
             gqlTypes.field(
               gqlTypes.name(queryType.name),
-              gqlTypes.name("items"),
+              gqlTypes.name('items'),
               args,
               null,
               gqlTypes.selectionSet(fields)
@@ -203,10 +203,10 @@ const buildGqlQuery =
 
             gqlTypes.field(
               gqlTypes.name(`_${queryType.name}Meta`),
-              gqlTypes.name("total"),
+              gqlTypes.name('total'),
               metaArgs,
               null,
-              gqlTypes.selectionSet([gqlTypes.field(gqlTypes.name("count"))])
+              gqlTypes.selectionSet([gqlTypes.field(gqlTypes.name('count'))])
             ),
           ]),
           gqlTypes.name(queryType.name),
@@ -218,11 +218,11 @@ const buildGqlQuery =
     if (aorFetchType === DELETE) {
       return gqlTypes.document([
         gqlTypes.operationDefinition(
-          "mutation",
+          'mutation',
           gqlTypes.selectionSet([
             gqlTypes.field(
               gqlTypes.name(queryType.name),
-              gqlTypes.name("data"),
+              gqlTypes.name('data'),
               args,
               null,
               gqlTypes.selectionSet(fields)
@@ -236,11 +236,11 @@ const buildGqlQuery =
 
     return gqlTypes.document([
       gqlTypes.operationDefinition(
-        QUERY_TYPES.includes(aorFetchType) ? "query" : "mutation",
+        QUERY_TYPES.includes(aorFetchType) ? 'query' : 'mutation',
         gqlTypes.selectionSet([
           gqlTypes.field(
             gqlTypes.name(queryType.name),
-            gqlTypes.name("data"),
+            gqlTypes.name('data'),
             args,
             null,
             gqlTypes.selectionSet(fields)
