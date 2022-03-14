@@ -1,4 +1,4 @@
-import { ArgumentNode, TypeKind } from 'graphql';
+import { ArgumentNode, VariableDefinitionNode, TypeKind } from 'graphql';
 import * as gqlTypes from 'graphql-ast-types-browser';
 import { DELETE, GET_LIST, GET_MANY, GET_MANY_REFERENCE } from 'ra-core';
 import { QUERY_TYPES } from 'ra-data-graphql';
@@ -150,7 +150,7 @@ export const buildArgs = (
 export const buildApolloArgs = (
   query: IntrospectionField,
   variables: Variables
-) => {
+): VariableDefinitionNode[] => {
   if (query.args.length === 0) {
     return [];
   }
@@ -170,7 +170,7 @@ export const buildApolloArgs = (
           getArgType(arg)
         ),
       ];
-    }, [] as any[]);
+    }, [] as VariableDefinitionNode[]);
 
   return args;
 };
