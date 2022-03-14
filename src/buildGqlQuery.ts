@@ -1,4 +1,4 @@
-import { TypeKind } from 'graphql';
+import { ArgumentNode, TypeKind } from 'graphql';
 import * as gqlTypes from 'graphql-ast-types-browser';
 import { DELETE, GET_LIST, GET_MANY, GET_MANY_REFERENCE } from 'ra-core';
 import { QUERY_TYPES } from 'ra-data-graphql';
@@ -120,7 +120,10 @@ export const getArgType = (arg: IntrospectionInputValue) => {
   return gqlTypes.namedType(gqlTypes.name(type.name));
 };
 
-export const buildArgs = (query: IntrospectionField, variables: Variables) => {
+export const buildArgs = (
+  query: IntrospectionField,
+  variables: Variables
+): ArgumentNode[] => {
   if (query.args.length === 0) {
     return [];
   }
@@ -138,7 +141,7 @@ export const buildArgs = (query: IntrospectionField, variables: Variables) => {
           gqlTypes.variable(gqlTypes.name(arg.name))
         ),
       ],
-      [] as any[]
+      [] as ArgumentNode[]
     );
 
   return args;
