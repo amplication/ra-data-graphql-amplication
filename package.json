@@ -26,7 +26,7 @@
     "graphql-ast-types-browser": "1.0.2",
     "graphql-tag": "2.12.4",
     "lodash": "4.17.21",
-    "pluralize": "7.0.0",
+    "pluralize": "8.0.0",
     "ra-data-graphql": "3.19.10"
   },
   "peerDependencies": {
