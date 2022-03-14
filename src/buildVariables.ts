@@ -1,5 +1,5 @@
 /* eslint-disable default-case */
-import { IntrospectionInputType } from 'graphql';
+import { IntrospectionInputType, IntrospectionType } from 'graphql';
 import { camelCase } from 'lodash';
 import {
   CREATE,
@@ -17,7 +17,6 @@ import {
   IntrospectionField,
   IntrospectionInputObjectType,
   IntrospectionResults,
-  IntrospectionType,
   Resource,
 } from './types';
 

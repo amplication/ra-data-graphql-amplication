@@ -1,13 +1,11 @@
 import {
   IntrospectionSchema,
-  IntrospectionType,
   IntrospectionField,
   IntrospectionObjectType,
 } from 'graphql';
 
 export {
   IntrospectionInputObjectType,
-  IntrospectionType,
   IntrospectionField,
   IntrospectionInputValue,
   IntrospectionUnionType,
