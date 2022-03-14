@@ -1,5 +1,10 @@
 /* eslint-disable default-case */
-import { IntrospectionInputType, IntrospectionType } from 'graphql';
+import {
+  IntrospectionInputType,
+  IntrospectionNamedTypeRef,
+  IntrospectionNonNullTypeRef,
+  IntrospectionType,
+} from 'graphql';
 import { camelCase } from 'lodash';
 import {
   CREATE,
@@ -22,6 +27,72 @@ import {
 
 const NON_UPDATABLE_FIELDS = ['id', 'createdAt', 'updatedAt'];
 
+export default (introspectionResults: IntrospectionResults) =>
+  (
+    resource: Resource,
+    raFetchMethod: FetchType,
+    params: any,
+    queryType: IntrospectionField
+  ) => {
+    const preparedParams = prepareParams(
+      params,
+      queryType,
+      introspectionResults
+    );
+
+    switch (raFetchMethod) {
+      case GET_LIST: {
+        return buildGetListVariables(introspectionResults)(
+          resource,
+          raFetchMethod,
+          preparedParams
+          //queryType
+        );
+      }
+      case GET_MANY:
+        return {
+          where: { id: { in: preparedParams.ids } },
+        };
+      case GET_MANY_REFERENCE: {
+        let variables = buildGetListVariables(introspectionResults)(
+          resource,
+          raFetchMethod,
+          preparedParams
+          //queryType
+        );
+
+        variables = {
+          ...variables,
+          where: {
+            [preparedParams.target]: {
+              id: preparedParams.id,
+            },
+          },
+          //[preparedParams.target]: preparedParams.id,
+        };
+
+        return variables;
+      }
+      case GET_ONE:
+      case DELETE:
+        return {
+          where: {
+            id: preparedParams.id,
+          },
+        };
+      case CREATE:
+      case UPDATE: {
+        return buildCreateUpdateVariables(
+          resource,
+          raFetchMethod,
+          preparedParams,
+          queryType,
+          introspectionResults
+        );
+      }
+    }
+  };
+
 const sanitizeValue = (type: IntrospectionType, value: any) => {
   if (type.name === 'Int') {
     return parseInt(value, 10);
@@ -34,9 +105,12 @@ const sanitizeValue = (type: IntrospectionType, value: any) => {
   return value;
 };
 
-const castType = (type: any, value: any) => {
+const castType = (
+  value: any,
+  type: IntrospectionType | IntrospectionNonNullTypeRef
+) => {
   const realType = type.kind === 'NON_NULL' ? type.ofType : type;
-  switch (`${realType.kind}:${realType.name}`) {
+  switch (`${realType.kind}:${(realType as IntrospectionNamedTypeRef).name}`) {
     case 'SCALAR:Int':
       return Number(value);
 
@@ -136,7 +210,7 @@ const prepareParams = (
 
 const buildGetListVariables =
   (introspectionResults: IntrospectionResults) =>
-  (resource: Resource, aorFetchType: FetchType, params: any) => {
+  (resource: Resource, raFetchMethod: FetchType, params: any) => {
     let variables: { [key: string]: any } = {};
 
     if (params.filter) {
@@ -331,71 +405,3 @@ const buildCreateUpdateVariables = (
     }, {}),
   };
 };
-
-const buildVariables =
-  (introspectionResults: IntrospectionResults) =>
-  (
-    resource: Resource,
-    aorFetchType: FetchType,
-    params: any,
-    queryType: IntrospectionField
-  ) => {
-    const preparedParams = prepareParams(
-      params,
-      queryType,
-      introspectionResults
-    );
-
-    switch (aorFetchType) {
-      case GET_LIST: {
-        return buildGetListVariables(introspectionResults)(
-          resource,
-          aorFetchType,
-          preparedParams
-          //queryType
-        );
-      }
-      case GET_MANY:
-        return {
-          where: { id: { in: preparedParams.ids } },
-        };
-      case GET_MANY_REFERENCE: {
-        let variables = buildGetListVariables(introspectionResults)(
-          resource,
-          aorFetchType,
-          preparedParams
-          //queryType
-        );
-
-        variables = {
-          ...variables,
-          where: {
-            [preparedParams.target]: {
-              id: preparedParams.id,
-            },
-          },
-          //[preparedParams.target]: preparedParams.id,
-        };
-
-        return variables;
-      }
-      case GET_ONE:
-      case DELETE:
-        return {
-          where: {
-            id: preparedParams.id,
-          },
-        };
-      case CREATE:
-      case UPDATE: {
-        return buildCreateUpdateVariables(
-          resource,
-          aorFetchType,
-          preparedParams,
-          queryType,
-          introspectionResults
-        );
-      }
-    }
-  };
-export default buildVariables;
