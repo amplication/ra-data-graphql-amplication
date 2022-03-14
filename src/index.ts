@@ -34,7 +34,8 @@ const introspection: IntrospectionOptions = {
   },
 };
 
-const defaultAmplicationOptions = {
+const defaultAmplicationOptions: Options = {
+  //@ts-ignore
   buildQuery: defaultAmplicationBuildQuery,
   introspection,
 };
