@@ -1,21 +1,19 @@
-import { GET_LIST, GET_MANY, GET_MANY_REFERENCE, DELETE } from 'ra-core';
-import { QUERY_TYPES } from 'ra-data-graphql';
 import { TypeKind } from 'graphql';
 import * as gqlTypes from 'graphql-ast-types-browser';
-
+import { DELETE, GET_LIST, GET_MANY, GET_MANY_REFERENCE } from 'ra-core';
+import { QUERY_TYPES } from 'ra-data-graphql';
 import getFinalType from './getFinalType';
 import isList from './isList';
 import isRequired from './isRequired';
 import {
   FetchType,
+  IntrospectionField,
+  IntrospectionInputValue,
+  IntrospectionObjectType,
   IntrospectionResults,
-  QueryType,
+  IntrospectionUnionType,
   Resource,
   Variables,
-  IntrospectionInputValue,
-  IntrospectionUnionType,
-  IntrospectionObjectType,
-  IntrospectionField,
 } from './types';
 
 export const buildFragments =
@@ -122,7 +120,7 @@ export const getArgType = (arg: IntrospectionInputValue) => {
   return gqlTypes.namedType(gqlTypes.name(type.name));
 };
 
-export const buildArgs = (query: QueryType, variables: Variables) => {
+export const buildArgs = (query: IntrospectionField, variables: Variables) => {
   if (query.args.length === 0) {
     return [];
   }
@@ -146,7 +144,10 @@ export const buildArgs = (query: QueryType, variables: Variables) => {
   return args;
 };
 
-export const buildApolloArgs = (query: QueryType, variables: Variables) => {
+export const buildApolloArgs = (
+  query: IntrospectionField,
+  variables: Variables
+) => {
   if (query.args.length === 0) {
     return [];
   }
@@ -176,7 +177,7 @@ const buildGqlQuery =
   (
     resource: Resource,
     aorFetchType: FetchType,
-    queryType: QueryType,
+    queryType: IntrospectionField,
     variables: Variables
   ) => {
     const { sortField, sortOrder, ...metaVariables } = variables;

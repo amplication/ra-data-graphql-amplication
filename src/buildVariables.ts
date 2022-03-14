@@ -1,27 +1,25 @@
 /* eslint-disable default-case */
+import { IntrospectionInputType } from 'graphql';
+import { camelCase } from 'lodash';
 import {
+  CREATE,
+  DELETE,
   GET_LIST,
-  GET_ONE,
   GET_MANY,
   GET_MANY_REFERENCE,
-  CREATE,
+  GET_ONE,
   UPDATE,
-  DELETE,
 } from 'ra-core';
-
 import getFinalType from './getFinalType';
 import isList from './isList';
 import {
+  FetchType,
+  IntrospectionField,
+  IntrospectionInputObjectType,
   IntrospectionResults,
   IntrospectionType,
-  IntrospectionInputObjectType,
-  IntrospectionField,
   Resource,
-  FetchType,
-  QueryType,
 } from './types';
-import { IntrospectionInputType } from 'graphql';
-import { camelCase } from 'lodash';
 
 const NON_UPDATABLE_FIELDS = ['id', 'createdAt', 'updatedAt'];
 
@@ -56,7 +54,7 @@ const castType = (type: any, value: any) => {
 
 const prepareParams = (
   params: any,
-  queryType: QueryType,
+  queryType: IntrospectionField,
   introspectionResults: IntrospectionResults
 ) => {
   const result: { [key: string]: any } = {};
@@ -246,7 +244,7 @@ const buildGetListVariables =
   };
 
 const getCreateUpdateInputType = (
-  queryType: QueryType
+  queryType: IntrospectionField
 ): IntrospectionInputType => {
   const inputType = queryType.args.find((arg) => arg.name === 'data');
   return getFinalType(inputType?.type);
@@ -269,7 +267,7 @@ const buildCreateUpdateVariables = (
   resource: Resource,
   aorFetchType: FetchType,
   params: any,
-  queryType: QueryType,
+  queryType: IntrospectionField,
   introspectionResults: IntrospectionResults
 ) => {
   const inputType = getCreateUpdateInputType(queryType);
@@ -341,7 +339,7 @@ const buildVariables =
     resource: Resource,
     aorFetchType: FetchType,
     params: any,
-    queryType: QueryType
+    queryType: IntrospectionField
   ) => {
     const preparedParams = prepareParams(
       params,
