@@ -16,6 +16,86 @@ import {
   Variables,
 } from './types';
 
+export default (introspectionResults: IntrospectionResults) =>
+  (
+    resource: IntrospectedResource,
+    raFetchMethod: FetchType,
+    queryType: IntrospectionField,
+    variables: Variables
+  ) => {
+    const { sortField, sortOrder, ...metaVariables } = variables;
+    const apolloArgs = buildApolloArgs(queryType, variables);
+    const args = buildArgs(queryType, variables);
+    const metaArgs = buildArgs(queryType, metaVariables);
+    const fields = buildFields(introspectionResults)(resource.type.fields);
+
+    if (
+      raFetchMethod === GET_LIST ||
+      raFetchMethod === GET_MANY ||
+      raFetchMethod === GET_MANY_REFERENCE
+    ) {
+      return gqlTypes.document([
+        gqlTypes.operationDefinition(
+          'query',
+          gqlTypes.selectionSet([
+            gqlTypes.field(
+              gqlTypes.name(queryType.name),
+              gqlTypes.name('items'),
+              args,
+              null,
+              gqlTypes.selectionSet(fields)
+            ),
+            gqlTypes.field(
+              gqlTypes.name(`_${queryType.name}Meta`),
+              gqlTypes.name('total'),
+              metaArgs,
+              null,
+              gqlTypes.selectionSet([gqlTypes.field(gqlTypes.name('count'))])
+            ),
+          ]),
+          gqlTypes.name(queryType.name),
+          apolloArgs
+        ),
+      ]);
+    }
+
+    if (raFetchMethod === DELETE) {
+      return gqlTypes.document([
+        gqlTypes.operationDefinition(
+          'mutation',
+          gqlTypes.selectionSet([
+            gqlTypes.field(
+              gqlTypes.name(queryType.name),
+              gqlTypes.name('data'),
+              args,
+              null,
+              gqlTypes.selectionSet(fields)
+            ),
+          ]),
+          gqlTypes.name(queryType.name),
+          apolloArgs
+        ),
+      ]);
+    }
+
+    return gqlTypes.document([
+      gqlTypes.operationDefinition(
+        QUERY_TYPES.includes(raFetchMethod) ? 'query' : 'mutation',
+        gqlTypes.selectionSet([
+          gqlTypes.field(
+            gqlTypes.name(queryType.name),
+            gqlTypes.name('data'),
+            args,
+            null,
+            gqlTypes.selectionSet(fields)
+          ),
+        ]),
+        gqlTypes.name(queryType.name),
+        apolloArgs
+      ),
+    ]);
+  };
+
 export const buildFragments =
   (introspectionResults: IntrospectionResults) =>
   (possibleTypes: Readonly<any[]>) =>
@@ -174,87 +254,3 @@ export const buildApolloArgs = (
 
   return args;
 };
-
-const buildGqlQuery =
-  (introspectionResults: IntrospectionResults) =>
-  (
-    resource: IntrospectedResource,
-    raFetchMethod: FetchType,
-    queryType: IntrospectionField,
-    variables: Variables
-  ) => {
-    const { sortField, sortOrder, ...metaVariables } = variables;
-    const apolloArgs = buildApolloArgs(queryType, variables);
-    const args = buildArgs(queryType, variables);
-    const metaArgs = buildArgs(queryType, metaVariables);
-    const fields = buildFields(introspectionResults)(resource.type.fields);
-
-    if (
-      raFetchMethod === GET_LIST ||
-      raFetchMethod === GET_MANY ||
-      raFetchMethod === GET_MANY_REFERENCE
-    ) {
-      return gqlTypes.document([
-        gqlTypes.operationDefinition(
-          'query',
-          gqlTypes.selectionSet([
-            gqlTypes.field(
-              gqlTypes.name(queryType.name),
-              gqlTypes.name('items'),
-              args,
-              null,
-              gqlTypes.selectionSet(fields)
-            ),
-
-            gqlTypes.field(
-              gqlTypes.name(`_${queryType.name}Meta`),
-              gqlTypes.name('total'),
-              metaArgs,
-              null,
-              gqlTypes.selectionSet([gqlTypes.field(gqlTypes.name('count'))])
-            ),
-          ]),
-          gqlTypes.name(queryType.name),
-          apolloArgs
-        ),
-      ]);
-    }
-
-    if (raFetchMethod === DELETE) {
-      return gqlTypes.document([
-        gqlTypes.operationDefinition(
-          'mutation',
-          gqlTypes.selectionSet([
-            gqlTypes.field(
-              gqlTypes.name(queryType.name),
-              gqlTypes.name('data'),
-              args,
-              null,
-              gqlTypes.selectionSet(fields)
-            ),
-          ]),
-          gqlTypes.name(queryType.name),
-          apolloArgs
-        ),
-      ]);
-    }
-
-    return gqlTypes.document([
-      gqlTypes.operationDefinition(
-        QUERY_TYPES.includes(raFetchMethod) ? 'query' : 'mutation',
-        gqlTypes.selectionSet([
-          gqlTypes.field(
-            gqlTypes.name(queryType.name),
-            gqlTypes.name('data'),
-            args,
-            null,
-            gqlTypes.selectionSet(fields)
-          ),
-        ]),
-        gqlTypes.name(queryType.name),
-        apolloArgs
-      ),
-    ]);
-  };
-
-export default buildGqlQuery;
