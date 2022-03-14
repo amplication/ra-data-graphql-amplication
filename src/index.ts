@@ -14,7 +14,7 @@ import buildDataProvider, {
   IntrospectionOptions,
   Options,
 } from 'ra-data-graphql';
-import defaultBuildQuery from './buildQuery';
+import defaultAmplicationBuildQuery from './buildQuery';
 
 /**
  * You can see more details about the introspection object in the link
@@ -35,7 +35,7 @@ const introspection: IntrospectionOptions = {
 };
 
 const defaultAmplicationOptions = {
-  buildQuery: defaultBuildQuery,
+  buildQuery: defaultAmplicationBuildQuery,
   introspection,
 };
 
