@@ -15,7 +15,7 @@ export const buildQueryFactory =
       (r) => r.type.name
     );
 
-    return (aorFetchType: FetchType, resourceName: string, params: any) => {
+    return (raFetchType: FetchType, resourceName: string, params: any) => {
       const resource = introspectionResults.resources.find(
         (r) => r.type.name === resourceName
       );
@@ -28,28 +28,28 @@ export const buildQueryFactory =
         );
       }
 
-      const queryType = resource[aorFetchType];
+      const queryType = resource[raFetchType];
 
       if (!queryType) {
         throw new Error(
-          `No query or mutation matching fetch type ${aorFetchType} could be found for resource ${resource.type.name}`
+          `No query or mutation matching fetch type ${raFetchType} could be found for resource ${resource.type.name}`
         );
       }
 
       const variables = buildVariablesImpl(introspectionResults)(
         resource,
-        aorFetchType,
+        raFetchType,
         params,
         queryType
       );
       const query = buildGqlQueryImpl(introspectionResults)(
         resource,
-        aorFetchType,
+        raFetchType,
         queryType,
         variables
       );
       const parseResponse = getResponseParserImpl(introspectionResults)(
-        aorFetchType,
+        raFetchType,
         resource,
         queryType
       );
