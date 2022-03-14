@@ -1,4 +1,9 @@
-import { ArgumentNode, VariableDefinitionNode, TypeKind } from 'graphql';
+import {
+  ArgumentNode,
+  IntrospectionNamedTypeRef,
+  TypeKind,
+  VariableDefinitionNode,
+} from 'graphql';
 import * as gqlTypes from 'graphql-ast-types-browser';
 import { DELETE, GET_LIST, GET_MANY, GET_MANY_REFERENCE } from 'ra-core';
 import { IntrospectedResource, QUERY_TYPES } from 'ra-data-graphql';
@@ -12,7 +17,6 @@ import {
   IntrospectionObjectType,
   IntrospectionResults,
   IntrospectionUnionType,
-  Resource,
   Variables,
 } from './types';
 
@@ -96,29 +100,6 @@ export default (introspectionResults: IntrospectionResults) =>
     ]);
   };
 
-export const buildFragments =
-  (introspectionResults: IntrospectionResults) =>
-  (possibleTypes: Readonly<any[]>) =>
-    possibleTypes.reduce((acc, possibleType) => {
-      const type = getFinalType(possibleType);
-
-      const linkedType = introspectionResults.types.find(
-        (t) => t.name === type.name
-      );
-
-      return [
-        ...acc,
-        gqlTypes.inlineFragment(
-          gqlTypes.selectionSet(
-            buildFields(introspectionResults)(
-              (linkedType as IntrospectionObjectType)?.fields
-            )
-          ),
-          gqlTypes.namedType(gqlTypes.name(type.name))
-        ),
-      ];
-    }, [] as any[]);
-
 export const buildFields =
   (introspectionResults: IntrospectionResults, paths: String[] = []) =>
   (fields: Readonly<IntrospectionField[]>): any =>
@@ -179,26 +160,30 @@ export const buildFields =
       return acc;
     }, [] as IntrospectionField[]);
 
-export const getArgType = (arg: IntrospectionInputValue) => {
-  const type = getFinalType(arg.type);
-  const required = isRequired(arg.type);
-  const list = isList(arg.type);
+export const buildFragments =
+  (introspectionResults: IntrospectionResults) =>
+  (
+    possibleTypes: readonly IntrospectionNamedTypeRef<IntrospectionObjectType>[]
+  ) =>
+    possibleTypes.reduce((acc, possibleType) => {
+      const type = getFinalType(possibleType);
 
-  if (list) {
-    if (required) {
-      return gqlTypes.listType(
-        gqlTypes.nonNullType(gqlTypes.namedType(gqlTypes.name(type.name)))
+      const linkedType = introspectionResults.types.find(
+        (t) => t.name === type.name
       );
-    }
-    return gqlTypes.listType(gqlTypes.namedType(gqlTypes.name(type.name)));
-  }
 
-  if (required) {
-    return gqlTypes.nonNullType(gqlTypes.namedType(gqlTypes.name(type.name)));
-  }
-
-  return gqlTypes.namedType(gqlTypes.name(type.name));
-};
+      return [
+        ...acc,
+        gqlTypes.inlineFragment(
+          gqlTypes.selectionSet(
+            buildFields(introspectionResults)(
+              (linkedType as IntrospectionObjectType)?.fields
+            )
+          ),
+          gqlTypes.namedType(gqlTypes.name(type.name))
+        ),
+      ];
+    }, [] as IntrospectionNamedTypeRef<IntrospectionObjectType>[]);
 
 export const buildArgs = (
   query: IntrospectionField,
@@ -253,4 +238,25 @@ export const buildApolloArgs = (
     }, [] as VariableDefinitionNode[]);
 
   return args;
+};
+
+export const getArgType = (arg: IntrospectionInputValue) => {
+  const type = getFinalType(arg.type);
+  const required = isRequired(arg.type);
+  const list = isList(arg.type);
+
+  if (list) {
+    if (required) {
+      return gqlTypes.listType(
+        gqlTypes.nonNullType(gqlTypes.namedType(gqlTypes.name(type.name)))
+      );
+    }
+    return gqlTypes.listType(gqlTypes.namedType(gqlTypes.name(type.name)));
+  }
+
+  if (required) {
+    return gqlTypes.nonNullType(gqlTypes.namedType(gqlTypes.name(type.name)));
+  }
+
+  return gqlTypes.namedType(gqlTypes.name(type.name));
 };
