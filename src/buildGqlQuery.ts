@@ -7,7 +7,11 @@ import {
 } from 'graphql';
 import * as gqlTypes from 'graphql-ast-types-browser';
 import { DELETE, GET_LIST, GET_MANY, GET_MANY_REFERENCE } from 'ra-core';
-import { IntrospectedResource, QUERY_TYPES } from 'ra-data-graphql';
+import {
+  IntrospectedResource,
+  IntrospectionResult,
+  QUERY_TYPES,
+} from 'ra-data-graphql';
 import getFinalType from './getFinalType';
 import isList from './isList';
 import isRequired from './isRequired';
@@ -16,12 +20,11 @@ import {
   IntrospectionField,
   IntrospectionInputValue,
   IntrospectionObjectType,
-  IntrospectionResults,
   IntrospectionUnionType,
   Variables,
 } from './types';
 
-export default (introspectionResults: IntrospectionResults) =>
+export default (introspectionResults: IntrospectionResult) =>
   (
     resource: IntrospectedResource,
     raFetchMethod: FetchType,
@@ -102,7 +105,7 @@ export default (introspectionResults: IntrospectionResults) =>
   };
 
 export const buildFields =
-  (introspectionResults: IntrospectionResults, paths: String[] = []) =>
+  (introspectionResults: IntrospectionResult, paths: String[] = []) =>
   (fields: Readonly<IntrospectionField[]>): any =>
     fields.reduce((acc, field) => {
       const type = getFinalType(field.type);
@@ -162,7 +165,7 @@ export const buildFields =
     }, [] as IntrospectionField[]);
 
 export const buildFragments =
-  (introspectionResults: IntrospectionResults) =>
+  (introspectionResults: IntrospectionResult) =>
   (
     possibleTypes: readonly IntrospectionNamedTypeRef<IntrospectionObjectType>[]
   ) =>
