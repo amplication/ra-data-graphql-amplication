@@ -23,6 +23,7 @@ import {
   IntrospectionInputObjectType,
   IntrospectionResults,
   Resource,
+  Variables,
 } from './types';
 
 const NON_UPDATABLE_FIELDS = ['id', 'createdAt', 'updatedAt'];
@@ -33,7 +34,7 @@ export default (introspectionResults: IntrospectionResults) =>
     raFetchMethod: FetchType,
     params: any,
     queryType: IntrospectionField
-  ) => {
+  ): Variables => {
     const preparedParams = prepareParams(
       params,
       queryType,
@@ -91,6 +92,7 @@ export default (introspectionResults: IntrospectionResults) =>
         );
       }
     }
+    return {};
   };
 
 const sanitizeValue = (type: IntrospectionType, value: any) => {

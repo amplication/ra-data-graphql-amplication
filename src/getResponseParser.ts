@@ -44,14 +44,14 @@ const sanitizeResource = (data: any): any => {
 
 const getResponseParser =
   (introspectionResults: IntrospectionResults) =>
-  (aorFetchType: FetchType) =>
+  (raFetchType: FetchType) =>
   (response: any) => {
     const data = response.data;
 
     if (
-      aorFetchType === GET_LIST ||
-      aorFetchType === GET_MANY ||
-      aorFetchType === GET_MANY_REFERENCE
+      raFetchType === GET_LIST ||
+      raFetchType === GET_MANY ||
+      raFetchType === GET_MANY_REFERENCE
     ) {
       return {
         data: response?.data?.items?.map(sanitizeResource),
