@@ -47,7 +47,6 @@ export default (introspectionResults: IntrospectionResults) =>
           resource,
           raFetchMethod,
           preparedParams
-          //queryType
         );
       }
       case GET_MANY:
@@ -69,7 +68,6 @@ export default (introspectionResults: IntrospectionResults) =>
               id: preparedParams.id,
             },
           },
-          //[preparedParams.target]: preparedParams.id,
         };
 
         return variables;
