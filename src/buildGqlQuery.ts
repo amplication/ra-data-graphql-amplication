@@ -1,6 +1,10 @@
 import {
   ArgumentNode,
+  IntrospectionField,
+  IntrospectionInputValue,
   IntrospectionNamedTypeRef,
+  IntrospectionObjectType,
+  IntrospectionUnionType,
   TypeKind,
   TypeNode,
   VariableDefinitionNode,
@@ -15,14 +19,7 @@ import {
 import getFinalType from './getFinalType';
 import isList from './isList';
 import isRequired from './isRequired';
-import {
-  FetchType,
-  IntrospectionField,
-  IntrospectionInputValue,
-  IntrospectionObjectType,
-  IntrospectionUnionType,
-  Variables,
-} from './types';
+import { FetchType, Variables } from './types';
 
 export default (introspectionResults: IntrospectionResult) =>
   (

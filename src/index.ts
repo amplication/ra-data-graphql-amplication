@@ -10,10 +10,10 @@ import {
   GET_ONE,
 } from 'ra-core';
 import buildDataProvider, {
-  BuildQueryFactory,
   IntrospectionOptions,
   Options,
 } from 'ra-data-graphql';
+import { AmplicationRaDataGraphQLProviderOptions } from 'types';
 import defaultAmplicationBuildQuery from './buildQuery';
 
 /**
@@ -41,7 +41,7 @@ const defaultAmplicationOptions: Options = {
 };
 
 export default (
-  options: Omit<Options, 'buildQuery'> & { buildQuery?: BuildQueryFactory }
+  options: AmplicationRaDataGraphQLProviderOptions
 ): Promise<DataProvider> => {
   return buildDataProvider(merge({}, defaultAmplicationOptions, options)).then(
     (defaultDataProvider) => {

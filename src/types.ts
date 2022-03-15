@@ -1,19 +1,6 @@
-import {
-  IntrospectionSchema,
-  IntrospectionField,
-  IntrospectionObjectType,
-  IntrospectionType,
-} from 'graphql';
-
-export {
-  IntrospectionInputObjectType,
-  IntrospectionField,
-  IntrospectionInputValue,
-  IntrospectionUnionType,
-  IntrospectionObjectType,
-  IntrospectionNamedTypeRef,
-  GraphQLType,
-} from 'graphql';
+import { ApolloClient } from '@apollo/client';
+import { IntrospectionField, IntrospectionObjectType } from 'graphql';
+import { BuildQueryFactory, Options } from 'ra-data-graphql';
 
 export enum FetchType {
   GET_LIST = 'GET_LIST',
@@ -27,19 +14,13 @@ export enum FetchType {
   UPDATE_MANY = 'UPDATE_MANY',
 }
 
-export type Resource = {
-  type: IntrospectionObjectType;
-  GET_LIST: IntrospectionField | undefined;
-  GET_MANY: IntrospectionField | undefined;
-  GET_MANY_REFERENCE: IntrospectionField | undefined;
-  GET_ONE: IntrospectionField | undefined;
-  CREATE: IntrospectionField | undefined;
-  UPDATE: IntrospectionField | undefined;
-  DELETE: IntrospectionField | undefined;
-  UPDATE_MANY: IntrospectionField | undefined;
-  DELETE_MANY: IntrospectionField | undefined;
-};
-
 export type Variables = {
   [key: string]: any;
+};
+
+/**
+ * This options overwrite the default amplication options
+ */
+export type AmplicationRaDataGraphQLProviderOptions = {
+  client: ApolloClient<any>;
 };

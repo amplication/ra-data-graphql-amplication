@@ -1,5 +1,7 @@
 /* eslint-disable default-case */
 import {
+  IntrospectionField,
+  IntrospectionInputObjectType,
   IntrospectionInputType,
   IntrospectionNamedTypeRef,
   IntrospectionNonNullTypeRef,
@@ -19,12 +21,7 @@ import { IntrospectedResource, IntrospectionResult } from 'ra-data-graphql';
 import { NON_UPDATABLE_FIELDS } from './constants';
 import getFinalType from './getFinalType';
 import isList from './isList';
-import {
-  FetchType,
-  IntrospectionField,
-  IntrospectionInputObjectType,
-  Variables,
-} from './types';
+import { FetchType, Variables } from './types';
 
 export default (introspectionResults: IntrospectionResult) =>
   (
