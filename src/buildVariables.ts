@@ -263,7 +263,7 @@ const buildGetListVariables =
           const resourceField = resource.type.fields.find(
             (f) => f.name === parts[0]
           );
-          const type = getFinalType(resourceField?.type);
+          const type = resourceField?.type && getFinalType(resourceField?.type);
           return {
             ...acc,
             [key]: sanitizeValue(type, params.filter[key]),
@@ -320,7 +320,7 @@ const getCreateUpdateInputType = (
   queryType: IntrospectionField
 ): IntrospectionInputType => {
   const inputType = queryType.args.find((arg) => arg.name === 'data');
-  return getFinalType(inputType?.type);
+  return inputType?.type && getFinalType(inputType?.type);
 };
 
 const getInputTypeFieldsNames = (
