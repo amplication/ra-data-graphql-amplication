@@ -178,7 +178,7 @@ const prepareParams = (
     ) {
       const args = (
         introspectionResults.types.find(
-          (item) => item.kind === arg?.type.kind && item.name === arg?.type.name
+          (item) => item.kind === arg!.type.kind && item.name === arg!.type.name
         ) as IntrospectionInputObjectType
       )?.inputFields;
 
@@ -336,7 +336,7 @@ const getInputTypeFieldsNames = (
 
 const buildCreateUpdateVariables = (
   resource: IntrospectedResource,
-  aorFetchType: FetchType,
+  raFetchMethod: FetchType,
   params: any,
   queryType: IntrospectionField,
   introspectionResults: IntrospectionResult
@@ -366,7 +366,7 @@ const buildCreateUpdateVariables = (
           };
         }
 
-        if (aorFetchType === 'UPDATE') {
+        if (raFetchMethod === 'UPDATE') {
           return {
             ...acc,
             [key]: {
@@ -375,7 +375,7 @@ const buildCreateUpdateVariables = (
           };
         }
 
-        if (aorFetchType === 'CREATE') {
+        if (raFetchMethod === 'CREATE') {
           return {
             ...acc,
             [key]: {
