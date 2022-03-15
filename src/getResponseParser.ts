@@ -1,6 +1,31 @@
+import { ApolloQueryResult } from '@apollo/client';
+import { IntrospectionField } from 'graphql';
 import { GET_LIST, GET_MANY, GET_MANY_REFERENCE } from 'ra-core';
-import { IntrospectionResult } from 'ra-data-graphql';
+import { IntrospectedResource, IntrospectionResult } from 'ra-data-graphql';
 import { FetchType } from 'types';
+
+export default (introspectionResults: IntrospectionResult) =>
+  (
+    raFetchMethod: FetchType,
+    resource: IntrospectedResource,
+    queryType: IntrospectionField
+  ) =>
+  (response: ApolloQueryResult<any>) => {
+    const data = response.data;
+
+    if (
+      raFetchMethod === GET_LIST ||
+      raFetchMethod === GET_MANY ||
+      raFetchMethod === GET_MANY_REFERENCE
+    ) {
+      return {
+        data: response?.data?.items?.map(sanitizeResource),
+        total: response?.data?.total?.count,
+      };
+    }
+
+    return { data: sanitizeResource(data.data) };
+  };
 
 const sanitizeResource = (data: any): any => {
   const result = Object.keys(data).reduce((acc, key) => {
@@ -42,25 +67,3 @@ const sanitizeResource = (data: any): any => {
 
   return result;
 };
-
-const getResponseParser =
-  (introspectionResults: IntrospectionResult) =>
-  (raFetchType: FetchType) =>
-  (response: any) => {
-    const data = response.data;
-
-    if (
-      raFetchType === GET_LIST ||
-      raFetchType === GET_MANY ||
-      raFetchType === GET_MANY_REFERENCE
-    ) {
-      return {
-        data: response?.data?.items?.map(sanitizeResource),
-        total: response?.data?.total?.count,
-      };
-    }
-
-    return { data: sanitizeResource(data.data) };
-  };
-
-export default getResponseParser;

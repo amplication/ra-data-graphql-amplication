@@ -52,8 +52,11 @@ export const buildQueryFactory =
         queryType,
         variables
       );
-      const parseResponse =
-        getResponseParserImpl(introspectionResults)(raFetchType)(resource);
+      const parseResponse = getResponseParserImpl(introspectionResults)(
+        raFetchType,
+        resource,
+        queryType
+      );
 
       return {
         query,
