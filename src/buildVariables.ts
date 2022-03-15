@@ -16,7 +16,7 @@ import {
   GET_ONE,
   UPDATE,
 } from 'ra-core';
-import { IntrospectedResource } from 'ra-data-graphql';
+import { IntrospectedResource, IntrospectionResult } from 'ra-data-graphql';
 import getFinalType from './getFinalType';
 import isList from './isList';
 import {
@@ -27,7 +27,7 @@ import {
   Variables,
 } from './types';
 
-export default (introspectionResults: IntrospectionResults) =>
+export default (introspectionResults: IntrospectionResult) =>
   (
     resource: IntrospectedResource,
     raFetchMethod: FetchType,
@@ -126,8 +126,8 @@ const castType = (
 
 const prepareParams = (
   params: any,
-  queryType: IntrospectionField,
-  introspectionResults: IntrospectionResults
+  queryType: Partial<IntrospectionField>,
+  introspectionResults: IntrospectionResult
 ) => {
   const result: { [key: string]: any } = {};
 
@@ -182,7 +182,7 @@ const prepareParams = (
           (item) => item.kind === arg?.type.kind && item.name === arg?.type.name
         ) as IntrospectionInputObjectType
       )?.inputFields;
-      //@ts-ignore
+
       result[key] = prepareParams(param, { args }, introspectionResults);
       return;
     }
@@ -208,7 +208,7 @@ const prepareParams = (
 };
 
 const buildGetListVariables =
-  (introspectionResults: IntrospectionResults) =>
+  (introspectionResults: IntrospectionResult) =>
   (resource: IntrospectedResource, raFetchMethod: FetchType, params: any) => {
     let variables: { [key: string]: any } = {};
 
@@ -323,7 +323,7 @@ const getCreateUpdateInputType = (
 };
 
 const getInputTypeFieldsNames = (
-  introspectionResults: IntrospectionResults,
+  introspectionResults: IntrospectionResult,
   typeName: String
 ): string[] => {
   const type = introspectionResults.types.find(
@@ -340,7 +340,7 @@ const buildCreateUpdateVariables = (
   aorFetchType: FetchType,
   params: any,
   queryType: IntrospectionField,
-  introspectionResults: IntrospectionResults
+  introspectionResults: IntrospectionResult
 ) => {
   const inputType = getCreateUpdateInputType(queryType);
   const fields = getInputTypeFieldsNames(introspectionResults, inputType.name);
