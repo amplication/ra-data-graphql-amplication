@@ -1,5 +1,4 @@
 /* eslint-disable default-case */
-import { NON_UPDATABLE_FIELDS } from './constants';
 import {
   IntrospectionInputType,
   IntrospectionNamedTypeRef,
@@ -17,13 +16,13 @@ import {
   UPDATE,
 } from 'ra-core';
 import { IntrospectedResource, IntrospectionResult } from 'ra-data-graphql';
+import { NON_UPDATABLE_FIELDS } from './constants';
 import getFinalType from './getFinalType';
 import isList from './isList';
 import {
   FetchType,
   IntrospectionField,
   IntrospectionInputObjectType,
-  IntrospectionResults,
   Variables,
 } from './types';
 

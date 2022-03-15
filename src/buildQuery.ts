@@ -1,8 +1,8 @@
-import { BuildQuery } from 'ra-data-graphql';
+import { BuildQuery, IntrospectionResult } from 'ra-data-graphql';
 import buildGqlQuery from './buildGqlQuery';
 import buildVariables from './buildVariables';
 import getResponseParser from './getResponseParser';
-import { FetchType, IntrospectionResults } from './types';
+import { FetchType } from './types';
 
 export const buildQueryFactory =
   (
@@ -10,7 +10,7 @@ export const buildQueryFactory =
     buildGqlQueryImpl = buildGqlQuery,
     getResponseParserImpl = getResponseParser
   ) =>
-  (introspectionResults: IntrospectionResults): BuildQuery => {
+  (introspectionResults: IntrospectionResult): BuildQuery => {
     const knownResources = introspectionResults.resources.map(
       (r) => r.type.name
     );
@@ -31,7 +31,7 @@ export const buildQueryFactory =
           )}`
         );
       }
-
+      //@ts-ignore
       const queryType = resource[raFetchType];
 
       if (!queryType) {

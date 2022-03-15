@@ -40,13 +40,6 @@ export type Resource = {
   DELETE_MANY: IntrospectionField | undefined;
 };
 
-export type IntrospectionResults = {
-  types: IntrospectionType[];
-  queries: IntrospectionField[];
-  resources: [Resource];
-  schema: IntrospectionSchema;
-};
-
 export type Variables = {
   [key: string]: any;
 };

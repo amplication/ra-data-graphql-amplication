@@ -1,5 +1,6 @@
 import { GET_LIST, GET_MANY, GET_MANY_REFERENCE } from 'ra-core';
-import { FetchType, IntrospectionResults } from 'types';
+import { IntrospectionResult } from 'ra-data-graphql';
+import { FetchType } from 'types';
 
 const sanitizeResource = (data: any): any => {
   const result = Object.keys(data).reduce((acc, key) => {
@@ -43,7 +44,7 @@ const sanitizeResource = (data: any): any => {
 };
 
 const getResponseParser =
-  (introspectionResults: IntrospectionResults) =>
+  (introspectionResults: IntrospectionResult) =>
   (raFetchType: FetchType) =>
   (response: any) => {
     const data = response.data;
