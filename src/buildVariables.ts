@@ -1,4 +1,5 @@
 /* eslint-disable default-case */
+import { NON_UPDATABLE_FIELDS } from './constants';
 import {
   IntrospectionInputType,
   IntrospectionNamedTypeRef,
@@ -15,6 +16,7 @@ import {
   GET_ONE,
   UPDATE,
 } from 'ra-core';
+import { IntrospectedResource } from 'ra-data-graphql';
 import getFinalType from './getFinalType';
 import isList from './isList';
 import {
@@ -22,15 +24,12 @@ import {
   IntrospectionField,
   IntrospectionInputObjectType,
   IntrospectionResults,
-  Resource,
   Variables,
 } from './types';
 
-const NON_UPDATABLE_FIELDS = ['id', 'createdAt', 'updatedAt'];
-
 export default (introspectionResults: IntrospectionResults) =>
   (
-    resource: Resource,
+    resource: IntrospectedResource,
     raFetchMethod: FetchType,
     params: any,
     queryType: IntrospectionField
@@ -210,7 +209,7 @@ const prepareParams = (
 
 const buildGetListVariables =
   (introspectionResults: IntrospectionResults) =>
-  (resource: Resource, raFetchMethod: FetchType, params: any) => {
+  (resource: IntrospectedResource, raFetchMethod: FetchType, params: any) => {
     let variables: { [key: string]: any } = {};
 
     if (params.filter) {
@@ -337,7 +336,7 @@ const getInputTypeFieldsNames = (
 };
 
 const buildCreateUpdateVariables = (
-  resource: Resource,
+  resource: IntrospectedResource,
   aorFetchType: FetchType,
   params: any,
   queryType: IntrospectionField,
