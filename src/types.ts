@@ -1,6 +1,4 @@
 import { ApolloClient } from '@apollo/client';
-import { IntrospectionField, IntrospectionObjectType } from 'graphql';
-import { BuildQueryFactory, Options } from 'ra-data-graphql';
 
 export enum FetchType {
   GET_LIST = 'GET_LIST',
