@@ -1,56 +1,58 @@
-import merge from "lodash/merge";
-import buildDataProvider from "ra-data-graphql";
-import pluralize from "pluralize";
-import { camelCase } from "camel-case";
-
-import defaultBuildQuery from "./buildQuery";
-
+import { camelCase } from 'camel-case';
+import { IntrospectionType } from 'graphql';
+import merge from 'lodash/merge';
+import pluralize from 'pluralize';
 import {
+  DataProvider,
   GET_LIST,
-  GET_ONE,
   GET_MANY,
   GET_MANY_REFERENCE,
-  DELETE_MANY,
-  UPDATE_MANY,
-} from "ra-core";
+  GET_ONE,
+} from 'ra-core';
+import buildDataProvider, {
+  IntrospectionOptions,
+  Options,
+} from 'ra-data-graphql';
+import { AmplicationRaDataGraphQLProviderOptions } from 'types';
+import defaultAmplicationBuildQuery from './buildQuery';
 
-import { IntrospectionObjectType, FetchType } from "./types";
-
-const defaultOptions = {
-  buildQuery: defaultBuildQuery,
-  introspection: {
-    operationNames: {
-      [GET_ONE]: (resource: IntrospectionObjectType) =>
-        `${camelCase(resource.name as string)}`,
-      [GET_LIST]: (resource: IntrospectionObjectType) => {
-        return `${pluralize(camelCase(resource.name as string))}`;
-      },
-      [GET_MANY]: (resource: IntrospectionObjectType) =>
-        `${pluralize(camelCase(resource.name as string))}`,
-      [GET_MANY_REFERENCE]: (resource: IntrospectionObjectType) =>
-        `${pluralize(camelCase(resource.name as string))}`,
+/**
+ * You can see more details about the introspection object in the link
+ * https://github.com/marmelab/react-admin/tree/master/packages/ra-data-graphql#introspection-options
+ */
+const introspection: IntrospectionOptions = {
+  operationNames: {
+    [GET_ONE]: (resource: IntrospectionType) =>
+      `${camelCase(resource.name as string)}`,
+    [GET_LIST]: (resource: IntrospectionType) => {
+      return `${pluralize(camelCase(resource.name as string))}`;
     },
+    [GET_MANY]: (resource: IntrospectionType) =>
+      `${pluralize(camelCase(resource.name as string))}`,
+    [GET_MANY_REFERENCE]: (resource: IntrospectionType) =>
+      `${pluralize(camelCase(resource.name as string))}`,
   },
 };
 
-export const buildQuery = defaultBuildQuery;
+const defaultAmplicationOptions: Options = {
+  //@ts-ignore
+  buildQuery: defaultAmplicationBuildQuery,
+  introspection,
+};
 
-export default (options: any) => {
-  return buildDataProvider(merge({}, defaultOptions, options)).then(
-    (defaultDataProvider: any) => {
-      return (
-        fetchType: FetchType,
-        resource: IntrospectionObjectType,
-        params: any
-      ) => {
-        if (fetchType === DELETE_MANY) {
+export default (
+  options: AmplicationRaDataGraphQLProviderOptions
+): Promise<DataProvider> => {
+  return buildDataProvider(merge({}, defaultAmplicationOptions, options)).then(
+    (defaultDataProvider) => {
+      return {
+        ...defaultDataProvider,
+        deleteMany: () => {
           throw new Error(`DELETE_MANY is not supported by this data provider`);
-        }
-        if (fetchType === UPDATE_MANY) {
+        },
+        updateMany: () => {
           throw new Error(`UPDATE_MANY is not supported by this data provider`);
-        }
-
-        return defaultDataProvider(fetchType, resource, params);
+        },
       };
     }
   );

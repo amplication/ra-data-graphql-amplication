@@ -28,24 +28,24 @@ The `ra-data-graphql-amplication` package exposes a single function, which is a 
 
 ```ts
 // in graphqlDataProvider.ts
-import buildGraphQLProvider from "ra-data-graphql-amplication";
-import { ApolloClient } from "apollo-client";
-import { createHttpLink } from "apollo-link-http";
-import { setContext } from "apollo-link-context";
-import { InMemoryCache } from "apollo-cache-inmemory";
+import buildGraphQLProvider from 'ra-data-graphql-amplication';
+import { ApolloClient } from 'apollo-client';
+import { createHttpLink } from 'apollo-link-http';
+import { setContext } from 'apollo-link-context';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 
 const httpLink = createHttpLink({
   //@todo: get the url from a configuration file
-  uri: "http://localhost:3000/graphql",
+  uri: 'http://localhost:3000/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {
   //@todo: get the authentication token from local storage
-  const token = "YWRtaW46YWRtaW4=";
+  const token = 'YWRtaW46YWRtaW4=';
   return {
     headers: {
       ...headers,
-      authorization: token ? `Basic ${token}` : "",
+      authorization: token ? `Basic ${token}` : '',
     },
   };
 });
@@ -62,18 +62,18 @@ export default buildGraphQLProvider({
 
 ```tsx
 //in app.tsx
-import React, { useEffect, useState } from "react";
-import { Admin, DataProvider, Resource } from "react-admin";
+import React, { useEffect, useState } from 'react';
+import { Admin, DataProvider, Resource } from 'react-admin';
 
-import buildGraphQLProvider from "./graphqlDataProvider";
-import basicHttpAuthProvider from "./auth-provider/ra-auth-basic-http";
+import buildGraphQLProvider from './graphqlDataProvider';
+import basicHttpAuthProvider from './auth-provider/ra-auth-basic-http';
 
-import "./App.css";
-import Dashboard from "./pages/Dashboard";
+import './App.css';
+import Dashboard from './pages/Dashboard';
 
-import { UserList } from "./User/UserList";
-import { UserEdit } from "./User/UserEdit";
-import { UserCreate } from "./User/UserCreate";
+import { UserList } from './User/UserList';
+import { UserEdit } from './User/UserEdit';
+import { UserCreate } from './User/UserCreate';
 
 function App() {
   const [dataProvider, setDataProvider] = useState<DataProvider | null>(null);
@@ -123,7 +123,7 @@ You can either supply the client options by calling `buildGraphQLProvider` like 
 
 ```js
 buildGraphQLProvider({
-  clientOptions: { uri: "http://localhost:4000", ...otherApolloOptions },
+  clientOptions: { uri: 'http://localhost:4000', ...otherApolloOptions },
 });
 ```
 
