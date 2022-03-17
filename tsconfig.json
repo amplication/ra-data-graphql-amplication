@@ -1,26 +1,32 @@
 {
-    "compilerOptions": {
-      "module": "commonjs",
-      "declaration": true,
-      "removeComments": true,
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "target": "es2017",
-      "lib": ["dom","es2020"],
-      "sourceMap": true,
-      "baseUrl": "./src",
-      "outDir": "dist",
-      "incremental": true,
-      "skipLibCheck": true,
-      "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true,
-      "resolveJsonModule": true,
-      "strict": true,
-      "jsx": "react",
-      "noImplicitAny": true,
-      
-    },
-    "include": ["src"],
-    "exclude": ["node_modules"]
-  }
-  
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es2017",
+    "lib": ["dom", "es2020"],
+    "sourceMap": true,
+    "baseUrl": "./src",
+    "outDir": "dist",
+    "incremental": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "jsx": "react",
+    "noImplicitAny": true
+  },
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.spec.js",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.test.js"
+  ]
+}

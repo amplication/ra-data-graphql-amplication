@@ -1,6 +1,4 @@
 {
-    "editor.formatOnSave": true,
-    "cSpell.words": [
-        "amplication"
-    ]
+  "editor.formatOnSave": true,
+  "cSpell.words": ["amplication"]
 }
