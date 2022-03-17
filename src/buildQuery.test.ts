@@ -1,4 +1,6 @@
 import { gql } from '@apollo/client';
+import { CREATE, GET_LIST } from 'ra-core';
+import { IntrospectionResult } from 'ra-data-graphql';
 import { buildQueryFactory } from './buildQuery';
 
 describe('buildQuery', () => {
@@ -10,11 +12,11 @@ describe('buildQuery', () => {
   };
   const introspectionResults = {
     resources: [resource],
-  };
+  } as unknown as IntrospectionResult;
 
   it('throws an error if resource is unknown', () => {
     expect(() =>
-      buildQueryFactory()(introspectionResults)('GET_LIST', 'Comment')
+      buildQueryFactory()(introspectionResults)(GET_LIST, 'Comment', {})
     ).toThrow(
       'Unknown resource Comment. Make sure it has been declared on your server side schema. Known resources are Post'
     );
@@ -22,7 +24,7 @@ describe('buildQuery', () => {
 
   it('throws an error if resource does not have a query or mutation for specified AOR fetch type', () => {
     expect(() =>
-      buildQueryFactory()(introspectionResults)('CREATE', 'Post')
+      buildQueryFactory()(introspectionResults)(CREATE, 'Post', {})
     ).toThrow(
       'No query or mutation matching fetch type CREATE could be found for resource Post'
     );
@@ -47,6 +49,7 @@ describe('buildQuery', () => {
       buildQueryFactory(
         buildVariablesFactory,
         buildGqlQueryFactory,
+        //@ts-ignore
         getResponseParserFactory
       )(introspectionResults)('GET_LIST', 'Post', { foo: 'bar' })
     ).toEqual({

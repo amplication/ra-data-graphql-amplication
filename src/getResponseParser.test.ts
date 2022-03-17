@@ -1,16 +1,20 @@
+import { ApolloQueryResult } from '@apollo/client';
 import { TypeKind } from 'graphql';
 import {
+  CREATE,
+  DELETE,
   GET_LIST,
   GET_MANY,
   GET_MANY_REFERENCE,
-  CREATE,
   UPDATE,
-  DELETE,
 } from 'ra-core';
+import { IntrospectionResult } from 'ra-data-graphql';
 import getResponseParser from './getResponseParser';
+import { FetchType } from './types';
 
 describe('getResponseParser', () => {
-  it.each([[GET_LIST], [GET_MANY], [GET_MANY_REFERENCE]])(
+  //@ts-ignore
+  it.each<FetchType[]>([[GET_LIST], [GET_MANY], [GET_MANY_REFERENCE]])(
     'returns the response expected for %s',
     (type) => {
       const introspectionResults = {
@@ -41,7 +45,7 @@ describe('getResponseParser', () => {
           },
         ],
         types: [{ name: 'User' }, { name: 'Tag' }],
-      };
+      } as unknown as IntrospectionResult;
       const response = {
         data: {
           items: [
@@ -72,13 +76,9 @@ describe('getResponseParser', () => {
           ],
           total: { count: 100 },
         },
-      };
+      } as ApolloQueryResult<any>;
 
-      expect(
-        getResponseParser(introspectionResults)(type, undefined, undefined)(
-          response
-        )
-      ).toEqual({
+      expect(getResponseParser(introspectionResults)(type)(response)).toEqual({
         data: [
           {
             id: 'post1',
@@ -109,8 +109,8 @@ describe('getResponseParser', () => {
       });
     }
   );
-
-  describe.each([[CREATE], [UPDATE], [DELETE]])('%s', (type) => {
+  //@ts-ignore
+  describe.each<FetchType[]>([[CREATE], [UPDATE], [DELETE]])('%s', (type) => {
     it(`returns the response expected for ${type}`, () => {
       const introspectionResults = {
         resources: [
@@ -140,7 +140,7 @@ describe('getResponseParser', () => {
           },
         ],
         types: [{ name: 'User' }, { name: 'Tag' }],
-      };
+      } as unknown as IntrospectionResult;
       const response = {
         data: {
           data: {
@@ -156,12 +156,8 @@ describe('getResponseParser', () => {
             embeddedJson: { foo: 'bar' },
           },
         },
-      };
-      expect(
-        getResponseParser(introspectionResults)(type, undefined, undefined)(
-          response
-        )
-      ).toEqual({
+      } as ApolloQueryResult<any>;
+      expect(getResponseParser(introspectionResults)(type)(response)).toEqual({
         data: {
           id: 'post1',
           title: 'title1',
@@ -206,7 +202,7 @@ describe('getResponseParser', () => {
           },
         ],
         types: [{ name: 'User' }, { name: 'Tag' }],
-      };
+      } as unknown as IntrospectionResult;
       const response = {
         data: {
           data: {
@@ -223,12 +219,8 @@ describe('getResponseParser', () => {
             embeddedJson: { foo: 'bar' },
           },
         },
-      };
-      expect(
-        getResponseParser(introspectionResults)(type, undefined, undefined)(
-          response
-        )
-      ).toEqual({
+      } as ApolloQueryResult<any>;
+      expect(getResponseParser(introspectionResults)(type)(response)).toEqual({
         data: {
           id: 'post1',
           title: 'title1',
@@ -274,7 +266,7 @@ describe('getResponseParser', () => {
           },
         ],
         types: [{ name: 'User' }, { name: 'Tag' }],
-      };
+      } as unknown as IntrospectionResult;
       const response = {
         data: {
           data: {
@@ -290,13 +282,9 @@ describe('getResponseParser', () => {
             embeddedJson: { foo: 'bar' },
           },
         },
-      };
+      } as ApolloQueryResult<any>;
 
-      expect(
-        getResponseParser(introspectionResults)(type, undefined, undefined)(
-          response
-        )
-      ).toEqual({
+      expect(getResponseParser(introspectionResults)(type)(response)).toEqual({
         data: {
           aliasTitle: 'title1',
           author: { firstName: 'Toto', id: 'author1' },
@@ -343,7 +331,7 @@ describe('getResponseParser', () => {
           },
         ],
         types: [{ name: 'User' }, { name: 'Tag' }],
-      };
+      } as unknown as IntrospectionResult;
       const response = {
         data: {
           data: {
@@ -361,12 +349,8 @@ describe('getResponseParser', () => {
             },
           },
         },
-      };
-      expect(
-        getResponseParser(introspectionResults)(type, undefined, undefined)(
-          response
-        )
-      ).toEqual({
+      } as ApolloQueryResult<any>;
+      expect(getResponseParser(introspectionResults)(type)(response)).toEqual({
         data: {
           id: 'post1',
           title: 'title1',

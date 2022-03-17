@@ -5,11 +5,7 @@ import { IntrospectedResource, IntrospectionResult } from 'ra-data-graphql';
 import { FetchType } from 'types';
 
 export default (introspectionResults: IntrospectionResult) =>
-  (
-    raFetchMethod: FetchType,
-    resource: IntrospectedResource,
-    queryType: IntrospectionField
-  ) =>
+  (raFetchMethod: FetchType) =>
   (response: ApolloQueryResult<any>) => {
     const data = response.data;
 

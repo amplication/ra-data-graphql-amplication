@@ -1,3 +1,4 @@
+import { IntrospectionField } from 'graphql';
 import {
   GET_LIST,
   GET_MANY,
@@ -6,7 +7,9 @@ import {
   UPDATE,
   DELETE,
 } from 'ra-core';
+import { IntrospectedResource, IntrospectionResult } from 'ra-data-graphql';
 import buildVariables from './buildVariables';
+import { FetchType } from './types';
 
 describe('buildVariables', () => {
   const introspectionResult = {
@@ -16,7 +19,7 @@ describe('buildVariables', () => {
         inputFields: [{ name: 'tags_some' }],
       },
     ],
-  };
+  } as unknown as IntrospectionResult;
   describe('GET_LIST', () => {
     it('returns correct variables', () => {
       const params = {
@@ -32,10 +35,12 @@ describe('buildVariables', () => {
 
       expect(
         buildVariables(introspectionResult)(
-          { type: { name: 'Post', fields: [] } },
-          GET_LIST,
+          {
+            type: { name: 'Post', fields: [] },
+          } as unknown as IntrospectedResource,
+          GET_LIST as FetchType,
           params,
-          {}
+          {} as IntrospectionField
         )
       ).toEqual({
         filter: {
@@ -63,12 +68,12 @@ describe('buildVariables', () => {
       };
       const queryType = {
         args: [{ name: 'tagsIds' }, { name: 'authorId' }],
-      };
+      } as unknown as IntrospectionField;
 
       expect(
         buildVariables(introspectionResult)(
-          { type: { name: 'Post' } },
-          CREATE,
+          { type: { name: 'Post' } } as unknown as IntrospectedResource,
+          CREATE as FetchType,
           params,
           queryType
         )
@@ -92,12 +97,12 @@ describe('buildVariables', () => {
       };
       const queryType = {
         args: [{ name: 'tagsIds' }, { name: 'authorId' }],
-      };
+      } as unknown as IntrospectionField;
 
       expect(
         buildVariables(introspectionResult)(
-          { type: { name: 'Post' } },
-          UPDATE,
+          { type: { name: 'Post' } } as unknown as IntrospectedResource,
+          UPDATE as FetchType,
           params,
           queryType
         )
@@ -118,10 +123,10 @@ describe('buildVariables', () => {
 
       expect(
         buildVariables(introspectionResult)(
-          { type: { name: 'Post' } },
-          GET_MANY,
+          { type: { name: 'Post' } } as unknown as IntrospectedResource,
+          GET_MANY as FetchType,
           params,
-          {}
+          {} as IntrospectionField
         )
       ).toEqual({
         filter: { ids: ['tag1', 'tag2'] },
@@ -140,10 +145,10 @@ describe('buildVariables', () => {
 
       expect(
         buildVariables(introspectionResult)(
-          { type: { name: 'Post' } },
-          GET_MANY_REFERENCE,
+          { type: { name: 'Post' } } as unknown as IntrospectedResource,
+          GET_MANY_REFERENCE as FetchType,
           params,
-          {}
+          {} as IntrospectionField
         )
       ).toEqual({
         filter: { author_id: 'author1' },
@@ -162,10 +167,12 @@ describe('buildVariables', () => {
       };
       expect(
         buildVariables(introspectionResult)(
-          { type: { name: 'Post', inputFields: [] } },
-          DELETE,
+          {
+            type: { name: 'Post', inputFields: [] },
+          } as unknown as IntrospectedResource,
+          DELETE as FetchType,
           params,
-          {}
+          {} as IntrospectionField
         )
       ).toEqual({
         id: 'post1',
