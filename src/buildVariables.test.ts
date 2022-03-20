@@ -1,12 +1,5 @@
 import { IntrospectionField } from 'graphql';
-import {
-  GET_LIST,
-  GET_MANY,
-  GET_MANY_REFERENCE,
-  CREATE,
-  UPDATE,
-  DELETE,
-} from 'ra-core';
+import { DELETE, GET_LIST, GET_MANY, GET_MANY_REFERENCE } from 'ra-core';
 import { IntrospectedResource, IntrospectionResult } from 'ra-data-graphql';
 import buildVariables from './buildVariables';
 import { FetchType } from './types';
@@ -43,74 +36,16 @@ describe('buildVariables', () => {
           {} as IntrospectionField
         )
       ).toEqual({
-        filter: {
+        where: {
           ids: ['foo1', 'foo2'],
           tags_some: { id_in: ['tag1', 'tag2'] },
-          author: { id: 'author1' },
           views: 100,
         },
-        page: 9,
-        perPage: 10,
-        sortField: 'sortField',
-        sortOrder: 'DESC',
-      });
-    });
-  });
-
-  describe('CREATE', () => {
-    it('returns correct variables', () => {
-      const params = {
-        data: {
-          author: { id: 'author1' },
-          tags: [{ id: 'tag1' }, { id: 'tag2' }],
-          title: 'Foo',
+        skip: 90,
+        take: 10,
+        orderBy: {
+          sortField: 'Desc',
         },
-      };
-      const queryType = {
-        args: [{ name: 'tagsIds' }, { name: 'authorId' }],
-      } as unknown as IntrospectionField;
-
-      expect(
-        buildVariables(introspectionResult)(
-          { type: { name: 'Post' } } as unknown as IntrospectedResource,
-          CREATE as FetchType,
-          params,
-          queryType
-        )
-      ).toEqual({
-        authorId: 'author1',
-        tagsIds: ['tag1', 'tag2'],
-        title: 'Foo',
-      });
-    });
-  });
-
-  describe('UPDATE', () => {
-    it('returns correct variables', () => {
-      const params = {
-        id: 'post1',
-        data: {
-          author: { id: 'author1' },
-          tags: [{ id: 'tag1' }, { id: 'tag2' }],
-          title: 'Foo',
-        },
-      };
-      const queryType = {
-        args: [{ name: 'tagsIds' }, { name: 'authorId' }],
-      } as unknown as IntrospectionField;
-
-      expect(
-        buildVariables(introspectionResult)(
-          { type: { name: 'Post' } } as unknown as IntrospectedResource,
-          UPDATE as FetchType,
-          params,
-          queryType
-        )
-      ).toEqual({
-        id: 'post1',
-        authorId: 'author1',
-        tagsIds: ['tag1', 'tag2'],
-        title: 'Foo',
       });
     });
   });
@@ -129,7 +64,11 @@ describe('buildVariables', () => {
           {} as IntrospectionField
         )
       ).toEqual({
-        filter: { ids: ['tag1', 'tag2'] },
+        where: {
+          id: {
+            in: ['tag1', 'tag2'],
+          },
+        },
       });
     });
   });
@@ -151,11 +90,14 @@ describe('buildVariables', () => {
           {} as IntrospectionField
         )
       ).toEqual({
-        filter: { author_id: 'author1' },
-        page: 0,
-        perPage: 10,
-        sortField: 'name',
-        sortOrder: 'ASC',
+        where: {
+          author_id: { id: 'author1' },
+        },
+        orderBy: {
+          name: 'Asc',
+        },
+        skip: 0,
+        take: 10,
       });
     });
   });
@@ -175,7 +117,9 @@ describe('buildVariables', () => {
           {} as IntrospectionField
         )
       ).toEqual({
-        id: 'post1',
+        where: {
+          id: 'post1',
+        },
       });
     });
   });

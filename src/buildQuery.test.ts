@@ -78,10 +78,6 @@ describe('buildQuery', () => {
       queryType,
       { foo: true }
     );
-    expect(getResponseParser).toHaveBeenCalledWith(
-      'GET_LIST',
-      resource,
-      queryType
-    );
+    expect(getResponseParser).toHaveBeenCalledWith('GET_LIST');
   });
 });

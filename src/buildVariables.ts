@@ -53,7 +53,6 @@ export default (introspectionResults: IntrospectionResult) =>
           resource,
           raFetchMethod,
           preparedParams
-          //queryType
         );
 
         variables = {
@@ -155,11 +154,6 @@ const prepareParams = (
 
     if (queryType && Array.isArray(queryType.args)) {
       arg = queryType.args.find((item) => item.name === key);
-    }
-
-    if (param instanceof File) {
-      result[key] = param;
-      return;
     }
 
     if (param instanceof Date) {
