@@ -1,6 +1,6 @@
 {
   "name": "ra-data-graphql-amplication",
-  "version": "0.0.9",
+  "version": "0.0.11",
   "description": "A GraphQL simple data provider for react-admin",
   "main": "dist/index.js",
   "authors": [
