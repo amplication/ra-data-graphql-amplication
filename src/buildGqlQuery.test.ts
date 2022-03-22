@@ -1,24 +1,36 @@
-import { TypeKind, print } from 'graphql';
 import {
-  GET_LIST,
-  GET_ONE,
-  GET_MANY,
-  GET_MANY_REFERENCE,
-  UPDATE,
+  ASTNode,
+  IntrospectionField,
+  IntrospectionInputValue,
+  print,
+  TypeKind,
+} from 'graphql';
+import {
   CREATE,
   DELETE,
+  GET_LIST,
+  GET_MANY,
+  GET_MANY_REFERENCE,
+  GET_ONE,
+  UPDATE,
 } from 'ra-core';
+import { IntrospectedResource, IntrospectionResult } from 'ra-data-graphql';
 import buildGqlQuery, {
   buildApolloArgs,
   buildArgs,
   buildFields,
   getArgType,
 } from './buildGqlQuery';
+import { FetchType } from './types';
 
 describe('getArgType', () => {
   it('returns the arg type', () => {
     expect(
-      print(getArgType({ type: { kind: TypeKind.SCALAR, name: 'foo' } }))
+      print(
+        getArgType({
+          type: { kind: TypeKind.SCALAR, name: 'foo' },
+        } as IntrospectionInputValue)
+      )
     ).toEqual('foo');
   });
   it('returns the arg type for NON_NULL types', () => {
@@ -29,7 +41,7 @@ describe('getArgType', () => {
             kind: TypeKind.NON_NULL,
             ofType: { name: 'ID', kind: TypeKind.SCALAR },
           },
-        })
+        } as IntrospectionInputValue)
       )
     ).toEqual('ID!');
   });
@@ -41,7 +53,7 @@ describe('getArgType', () => {
             kind: TypeKind.LIST,
             ofType: { name: 'ID', kind: TypeKind.SCALAR },
           },
-        })
+        } as IntrospectionInputValue)
       )
     ).toEqual('[ID]');
   });
@@ -59,7 +71,7 @@ describe('getArgType', () => {
               },
             },
           },
-        })
+        } as IntrospectionInputValue)
       )
     ).toEqual('[ID!]');
   });
@@ -67,16 +79,20 @@ describe('getArgType', () => {
 
 describe('buildArgs', () => {
   it('returns an empty array when query does not have any arguments', () => {
-    expect(buildArgs({ args: [] }, {})).toEqual([]);
+    expect(
+      buildArgs({ args: [] } as unknown as IntrospectionField, {})
+    ).toEqual([]);
   });
 
   it('returns an array of args correctly filtered when query has arguments', () => {
     expect(
       print(
         buildArgs(
-          { args: [{ name: 'foo' }, { name: 'bar' }] },
+          {
+            args: [{ name: 'foo' }, { name: 'bar' }],
+          } as unknown as IntrospectionField,
           { foo: 'foo_value' }
-        )
+        ) as unknown as ASTNode
       )
     ).toEqual(['foo: $foo']);
   });
@@ -84,7 +100,14 @@ describe('buildArgs', () => {
 
 describe('buildApolloArgs', () => {
   it('returns an empty array when query does not have any arguments', () => {
-    expect(print(buildApolloArgs({ args: [] }, {}))).toEqual([]);
+    expect(
+      print(
+        buildApolloArgs(
+          { args: [] } as unknown as IntrospectionField,
+          {}
+        ) as unknown as ASTNode
+      )
+    ).toEqual([]);
   });
 
   it('returns an array of args correctly filtered when query has arguments', () => {
@@ -122,9 +145,9 @@ describe('buildApolloArgs', () => {
               },
               { name: 'bar' },
             ],
-          },
+          } as unknown as IntrospectionField,
           { foo: 'foo_value', barId: 100, barIds: [101, 102] }
-        )
+        ) as unknown as ASTNode
       )
     ).toEqual(['$foo: Int!', '$barId: ID', '$barIds: [ID!]']);
   });
@@ -145,7 +168,7 @@ describe('buildFields', () => {
           ],
         },
       ],
-    };
+    } as unknown as IntrospectionResult;
 
     const fields = [
       { type: { kind: TypeKind.SCALAR, name: 'ID' }, name: 'id' },
@@ -161,7 +184,7 @@ describe('buildFields', () => {
         type: { kind: TypeKind.OBJECT, name: 'resourceType' },
         name: 'resource',
       },
-    ];
+    ] as IntrospectionField[];
 
     expect(print(buildFields(introspectionResults)(fields))).toEqual([
       'id',
@@ -194,7 +217,7 @@ describe('buildFieldsWithCircularDependency', () => {
           ],
         },
       ],
-    };
+    } as unknown as IntrospectionResult;
 
     const fields = [
       { type: { kind: TypeKind.SCALAR, name: 'ID' }, name: 'id' },
@@ -210,7 +233,7 @@ describe('buildFieldsWithCircularDependency', () => {
         type: { kind: TypeKind.OBJECT, name: 'resourceType' },
         name: 'resource',
       },
-    ];
+    ] as IntrospectionField[];
 
     expect(print(buildFields(introspectionResults)(fields))).toEqual([
       'id',
@@ -239,7 +262,7 @@ describe('buildFieldsWithSameType', () => {
           ],
         },
       ],
-    };
+    } as unknown as IntrospectionResult;
 
     const fields = [
       { type: { kind: TypeKind.SCALAR, name: 'ID' }, name: 'id' },
@@ -259,7 +282,7 @@ describe('buildFieldsWithSameType', () => {
         type: { kind: TypeKind.OBJECT, name: 'resourceType' },
         name: 'resource',
       },
-    ];
+    ] as IntrospectionField[];
 
     expect(print(buildFields(introspectionResults)(fields))).toEqual([
       'id',
@@ -290,7 +313,7 @@ describe('buildGqlQuery', () => {
         ],
       },
     ],
-  };
+  } as unknown as IntrospectionResult;
 
   const resource = {
     type: {
@@ -307,7 +330,7 @@ describe('buildGqlQuery', () => {
         },
       ],
     },
-  };
+  } as unknown as IntrospectedResource;
 
   const queryType = {
     name: 'allCommand',
@@ -329,7 +352,7 @@ describe('buildGqlQuery', () => {
       },
       { name: 'bar' },
     ],
-  };
+  } as unknown as IntrospectionField;
   const params = { foo: 'foo_value' };
 
   it('returns the correct query for GET_LIST', () => {
@@ -337,7 +360,7 @@ describe('buildGqlQuery', () => {
       print(
         buildGqlQuery(introspectionResults)(
           resource,
-          GET_LIST,
+          GET_LIST as FetchType,
           queryType,
           params
         )
@@ -365,7 +388,7 @@ describe('buildGqlQuery', () => {
       print(
         buildGqlQuery(introspectionResults)(
           resource,
-          GET_MANY,
+          GET_MANY as FetchType,
           queryType,
           params
         )
@@ -393,7 +416,7 @@ describe('buildGqlQuery', () => {
       print(
         buildGqlQuery(introspectionResults)(
           resource,
-          GET_MANY_REFERENCE,
+          GET_MANY_REFERENCE as FetchType,
           queryType,
           params
         )
@@ -421,7 +444,7 @@ describe('buildGqlQuery', () => {
       print(
         buildGqlQuery(introspectionResults)(
           resource,
-          GET_ONE,
+          GET_ONE as FetchType,
           { ...queryType, name: 'getCommand' },
           params
         )
@@ -446,7 +469,7 @@ describe('buildGqlQuery', () => {
       print(
         buildGqlQuery(introspectionResults)(
           resource,
-          UPDATE,
+          UPDATE as FetchType,
           { ...queryType, name: 'updateCommand' },
           params
         )
@@ -471,7 +494,7 @@ describe('buildGqlQuery', () => {
       print(
         buildGqlQuery(introspectionResults)(
           resource,
-          CREATE,
+          CREATE as FetchType,
           { ...queryType, name: 'createCommand' },
           params
         )
@@ -496,7 +519,7 @@ describe('buildGqlQuery', () => {
       print(
         buildGqlQuery(introspectionResults)(
           resource,
-          DELETE,
+          DELETE as FetchType,
           { ...queryType, name: 'deleteCommand' },
           params
         )
