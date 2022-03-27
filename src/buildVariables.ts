@@ -22,7 +22,7 @@ import { NON_UPDATABLE_FIELDS } from './constants';
 import getFinalType from './getFinalType';
 import isList from './isList';
 import { FetchType, Variables } from './types';
-import {isArrayOfPrimitives} from "./isArrayOfPrimitives";
+import { isPrimitivesArray } from "./isArrayOfPrimitives";
 
 export default (introspectionResults: IntrospectionResult) =>
   (
@@ -358,7 +358,7 @@ const buildCreateUpdateVariables = (
           };
         }
 
-        if (!isArrayOfPrimitives(params.data[key])) {
+        if (!isPrimitivesArray(params.data[key])) {
           if (raFetchMethod === 'UPDATE') {
             return {
               ...acc,
