@@ -22,7 +22,7 @@ import { NON_UPDATABLE_FIELDS } from './constants';
 import getFinalType from './getFinalType';
 import isList from './isList';
 import { FetchType, Variables } from './types';
-import { isObject } from "./isObject";
+import { isObjectArr } from "./isObjectArr";
 
 export default (introspectionResults: IntrospectionResult) =>
   (
@@ -358,8 +358,7 @@ const buildCreateUpdateVariables = (
           };
         }
 
-        console.log(isObject(params.data[key]), params.data[key])
-        if (isObject(params.data[key])) {
+        if (isObjectArr(params.data[key])) {
           if (raFetchMethod === 'UPDATE') {
             return {
               ...acc,
