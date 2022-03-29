@@ -22,6 +22,7 @@ import { NON_UPDATABLE_FIELDS } from './constants';
 import getFinalType from './getFinalType';
 import isList from './isList';
 import { FetchType, Variables } from './types';
+import { isObjectArr } from "./isObjectArr";
 
 export default (introspectionResults: IntrospectionResult) =>
   (
@@ -357,22 +358,24 @@ const buildCreateUpdateVariables = (
           };
         }
 
-        if (raFetchMethod === 'UPDATE') {
-          return {
-            ...acc,
-            [key]: {
-              set: params.data[key],
-            },
-          };
-        }
+        if (isObjectArr(params.data[key])) {
+          if (raFetchMethod === 'UPDATE') {
+            return {
+              ...acc,
+              [key]: {
+                set: params.data[key],
+              },
+            };
+          }
 
-        if (raFetchMethod === 'CREATE') {
-          return {
-            ...acc,
-            [key]: {
-              connect: params.data[key],
-            },
-          };
+          if (raFetchMethod === 'CREATE') {
+            return {
+              ...acc,
+              [key]: {
+                connect: params.data[key],
+              },
+            };
+          }
         }
       }
 
