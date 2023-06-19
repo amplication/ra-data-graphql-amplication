@@ -28,7 +28,7 @@ export default (introspectionResults: IntrospectionResult) =>
     queryType: IntrospectionField,
     variables: Variables
   ) => {
-    const { sortField, sortOrder, ...metaVariables } = variables;
+    const { orderBy, skip, take, ...metaVariables } = variables;
     const apolloArgs = buildApolloArgs(queryType, variables);
     const args = buildArgs(queryType, variables);
     const metaArgs = buildArgs(queryType, metaVariables);
