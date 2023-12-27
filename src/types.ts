@@ -1,5 +1,3 @@
-import { ApolloClient } from '@apollo/client';
-
 export enum FetchType {
   GET_LIST = 'GET_LIST',
   GET_ONE = 'GET_ONE',
@@ -14,11 +12,4 @@ export enum FetchType {
 
 export type Variables = {
   [key: string]: any;
-};
-
-/**
- * This options overwrite the default amplication options
- */
-export type AmplicationRaDataGraphQLProviderOptions = {
-  client: ApolloClient<any>;
 };

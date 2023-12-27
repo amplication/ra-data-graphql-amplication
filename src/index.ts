@@ -13,7 +13,6 @@ import buildDataProvider, {
   IntrospectionOptions,
   Options,
 } from 'ra-data-graphql';
-import { AmplicationRaDataGraphQLProviderOptions } from 'types';
 import defaultAmplicationBuildQuery from './buildQuery';
 
 /**
@@ -40,9 +39,7 @@ const defaultAmplicationOptions: Options = {
   introspection,
 };
 
-export default (
-  options: AmplicationRaDataGraphQLProviderOptions
-): Promise<DataProvider> => {
+export default (options: Options): Promise<DataProvider> => {
   return buildDataProvider(merge({}, defaultAmplicationOptions, options)).then(
     (defaultDataProvider) => {
       return {
