@@ -22,7 +22,7 @@ import { NON_UPDATABLE_FIELDS } from './constants';
 import getFinalType from './getFinalType';
 import isList from './isList';
 import { FetchType, Variables } from './types';
-import { isObjectArr } from "./isObjectArr";
+import { isObjectArr } from './isObjectArr';
 
 export default (introspectionResults: IntrospectionResult) =>
   (
@@ -185,6 +185,17 @@ const prepareParams = (
     ) {
       result[key] = prepareParams(param, queryType, introspectionResults);
       return;
+    }
+
+    //this change is made to workaround an issue with the ReferenceArrayInput component in version 5,
+    //which does not include a parse function.
+    //only when the key is 'ids' and the value is an array and all elements has a id property, we convert the array of objects to an array of ids
+    if (key === 'ids' && Array.isArray(param)) {
+      //check if all elements in the array has a property "id"
+      if (param.every((item) => item.id)) {
+        result[key] = param.map((item) => item.id);
+        return;
+      }
     }
 
     if (!arg) {

@@ -42,18 +42,18 @@ const defaultAmplicationOptions: Options = {
 
 export default (
   options: AmplicationRaDataGraphQLProviderOptions
-): Promise<DataProvider> => {
-  return buildDataProvider(merge({}, defaultAmplicationOptions, options)).then(
-    (defaultDataProvider) => {
-      return {
-        ...defaultDataProvider,
-        deleteMany: () => {
-          throw new Error(`DELETE_MANY is not supported by this data provider`);
-        },
-        updateMany: () => {
-          throw new Error(`UPDATE_MANY is not supported by this data provider`);
-        },
-      };
-    }
+): DataProvider => {
+  const defaultDataProvider = buildDataProvider(
+    merge({}, defaultAmplicationOptions, options)
   );
+
+  return {
+    ...defaultDataProvider,
+    deleteMany: () => {
+      throw new Error(`DELETE_MANY is not supported by this data provider`);
+    },
+    updateMany: () => {
+      throw new Error(`UPDATE_MANY is not supported by this data provider`);
+    },
+  };
 };
