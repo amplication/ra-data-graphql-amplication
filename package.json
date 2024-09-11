@@ -1,6 +1,6 @@
 {
   "name": "ra-data-graphql-amplication",
-  "version": "1.0.0",
+  "version": "1.0.3-beta.0",
   "description": "A GraphQL simple data provider for react-admin",
   "main": "dist/index.js",
   "authors": [
@@ -23,8 +23,8 @@
     "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
   },
   "dependencies": {
-    "camel-case": "4.1.2",
     "@apollo/client": "^3.3.19",
+    "camel-case": "4.1.2",
     "graphql-ast-types-browser": "~1.0.2",
     "lodash": "~4.17.5",
     "pluralize": "~7.0.0",
@@ -32,7 +32,7 @@
   },
   "peerDependencies": {
     "graphql": "^15.6.0",
-    "ra-core": "^5.0.0"
+    "ra-core": "^5.1.4"
   },
   "devDependencies": {
     "@types/jest": "26.0.23",
